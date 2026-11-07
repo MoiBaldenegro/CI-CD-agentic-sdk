@@ -2,10 +2,12 @@ import { OpenCode } from "@opencode/sdk"
 
 await using opencode = await OpenCode.create()
 const session = await opencode.sessions.create({
-  location: { directory: "/workspace" },
+  location: { directory: process.cwd() },
 })
 
-await opencode.sessions.prompt({
+const response = await opencode.sessions.prompt({
   sessionID: session.id,
   text: "Review the current changes",
 })
+
+console.dir(response, { depth: null })

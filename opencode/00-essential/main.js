@@ -5,9 +5,15 @@ const session = await opencode.sessions.create({
   location: { directory: process.cwd() },
 })
 
-const response = await opencode.sessions.prompt({
+await opencode.sessions.prompt({
   sessionID: session.id,
   text: "Review the current changes",
 })
 
-console.dir(response, { depth: null })
+await opencode.sessions.wait({ sessionID: session.id })
+
+const messages = await opencode.message.list({
+  sessionID: session.id,
+})
+
+console.dir(messages, { depth: null })

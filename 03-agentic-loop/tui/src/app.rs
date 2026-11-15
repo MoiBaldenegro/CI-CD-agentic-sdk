@@ -672,6 +672,7 @@ impl App {
             }
         };
         let priority = form.value("Prioridad").trim().to_uppercase();
+        let workspace = form.value("Workspace").trim();
         let mut args = json!({
             "title": title,
             "description": description,
@@ -690,6 +691,10 @@ impl App {
                 "externalId": external_id,
                 "url": nullable_text(form.value("URL")),
             });
+        }
+
+        if !workspace.is_empty() {
+            args["metadata"] = json!({ "workspace": workspace });
         }
 
         let result = self
@@ -771,6 +776,7 @@ fn submit_task_form() -> Form {
             FormField::choice("Prioridad", "MEDIUM", PRIORITIES),
             FormField::text("Repositorio", "acme/app"),
             FormField::text("Rama base", "main"),
+            FormField::text("Workspace", ""),
             FormField::text("Criterios (coma)", ""),
         ],
     )

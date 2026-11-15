@@ -9,6 +9,7 @@ import { DomainException } from "../../shared/DomainException.js";
 import type { ProblemDetails } from "../../shared/DomainException.js";
 import { FileAgentRegistry, toPrimitives } from "../agents/FileAgentRegistry.js";
 import { AgentGatewayRouter } from "../agents/AgentGatewayRouter.js";
+import { OpenCodeAgentAdapter } from "../agents/OpenCodeAgentAdapter.js";
 import { SimulatedAgentAdapter } from "../agents/SimulatedAgentAdapter.js";
 import { CollectingEventPublisher } from "../events/CollectingEventPublisher.js";
 import { FileTaskRepository } from "../persistence/FileTaskRepository.js";
@@ -228,6 +229,7 @@ async function createContext(stores: Stores, outcome: AgentOutcomeValue): Promis
   const agents = await registry.list();
   const gateway = new AgentGatewayRouter();
   const providers = new Set<string>();
+  const simulate = process.env.AGENTIC_LOOP_SIMULATE === "1";
 
   for (const descriptor of agents) {
     const provider = descriptor.agent.provider;
@@ -235,7 +237,11 @@ async function createContext(stores: Stores, outcome: AgentOutcomeValue): Promis
     if (providers.has(provider)) continue;
 
     providers.add(provider);
-    gateway.register(new SimulatedAgentAdapter(provider, outcome));
+    gateway.register(
+      provider === "opencode" && !simulate
+        ? new OpenCodeAgentAdapter({ provider })
+        : new SimulatedAgentAdapter(provider, outcome),
+    );
   }
 
   const publisher = new CollectingEventPublisher();

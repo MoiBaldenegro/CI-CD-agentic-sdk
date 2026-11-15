@@ -70,9 +70,17 @@ La ruta por defecto del bridge es `dist/infrastructure/cli/bridge.js`, relativa 
 ### Variables de entorno
 
 ```text
-AGENTIC_LOOP_BRIDGE   Ruta al bridge JS
-AGENTIC_LOOP_NODE     Ejecutable de Node
-AGENTIC_LOOP_STORE    Store de tareas
+AGENTIC_LOOP_BRIDGE             Ruta al bridge JS
+AGENTIC_LOOP_NODE               Ejecutable de Node
+AGENTIC_LOOP_STORE              Store de tareas
+AGENTIC_LOOP_WORKSPACE          Checkout por defecto para OpenCode
+AGENTIC_LOOP_OPENCODE_URL       Servidor OpenCode existente
+AGENTIC_LOOP_OPENCODE_AGENT     Agente OpenCode (default: build)
+AGENTIC_LOOP_OPENCODE_PROVIDER  Provider para modelos sin prefijo (default: opencode)
+AGENTIC_LOOP_OPENCODE_TIMEOUT_MS Timeout de ejecución (default: 900000)
+AGENTIC_LOOP_OPENCODE_STARTUP_TIMEOUT_MS Timeout de arranque (default: 10000)
+AGENTIC_LOOP_OPENCODE_WEBFETCH=1 Permite webfetch (default: denegado)
+AGENTIC_LOOP_SIMULATE=1         Usa adaptadores simulados
 ```
 
 El store de agentes se deriva del store de tareas: si el store es `algo/tasks.json`, los agentes se guardan en `algo/agents.json`. También se puede fijar con `agentsStore` en el protocolo JSON.
@@ -214,7 +222,9 @@ Dentro de un formulario:
 - La lista se lee de `.agentic-loop/agents.json`.
 - `d` pide confirmación antes de eliminar.
 - Al eliminar el último agente, el estado pasa a **SIN AGENTES**.
-- Por cada provider registrado se crea un `SimulatedAgentAdapter` para ejecución. Todavía no se invoca un agente real de OpenCode/Claude.
+- El provider `opencode` usa `OpenCodeAgentAdapter`, que arranca un servidor local del SDK y ejecuta el agente sobre el workspace.
+- Los demás providers siguen usando `SimulatedAgentAdapter`.
+- `AGENTIC_LOOP_SIMULATE=1` fuerza adaptadores simulados para todos.
 
 Formato del archivo:
 
@@ -240,9 +250,25 @@ El formulario de creación (`s`) incluye:
 - External ID y URL. Las fuentes de issue exigen External ID.
 - Prioridad: `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`.
 - Repositorio en formato `owner/name` y rama base.
+- Workspace: checkout local donde OpenCode implementará la tarea. Si se deja vacío, usa `AGENTIC_LOOP_WORKSPACE` o el directorio actual.
 - Criterios de aceptación separados por comas.
 
 `e` ejecuta la tarea seleccionada: encola, asigna agente, transiciona a `IN_PROGRESS`, invoca el gateway y guarda el resultado. `c` la cancela con confirmación. `R` procesa la cola en orden de prioridad.
+
+## Ejecución real con OpenCode
+
+El adapter usa `@opencode-ai/sdk` y requiere el ejecutable `opencode` instalado y autenticado.
+
+```bash
+AGENTIC_LOOP_WORKSPACE=/ruta/al/checkout pnpm tui
+```
+
+- Toma el modelo del agente. `provider/model` usa ese provider; un id sin `/` usa `AGENTIC_LOOP_OPENCODE_PROVIDER`.
+- Arranca un servidor local por ejecución y lo cierra al terminar. Con `AGENTIC_LOOP_OPENCODE_URL` se conecta a un servidor existente.
+- Permite editar archivos y ejecutar comandos; deniega `webfetch`, `external_directory` y `doom_loop` por defecto. `bash` no está aislado por el sistema de permisos: usa un checkout sin secretos si no confías en la tarea.
+- El prompt prohíbe commits, pushes y pull requests salvo que la tarea lo pida.
+- Si el agente excede el timeout o falla, la tarea pasa a `FAILED`. Si se cancela, pasa a `BLOCKED`.
+- El resumen final se toma de las partes de texto; los patches se reportan como artefactos.
 
 ## Protocolo del bridge
 
@@ -386,8 +412,9 @@ printf '%s' '{"command":"store.reset","args":{"what":"all"}}' \
 
 ## Limitaciones actuales
 
-- La ejecución usa `SimulatedAgentAdapter`: devuelve `SUCCESS`, `FAILURE` o `BLOCKED` de forma determinista. Falta un adapter real de OpenCode/Claude.
-- Cada acción lanza un proceso Node; no hay streaming ni daemon.
+- OpenCode se ejecuta sin streaming en la TUI; el resultado aparece al terminar.
+- Claude sigue usando `SimulatedAgentAdapter`.
+- Cada acción lanza un proceso Node; no hay daemon.
 - Los stores son locales y no tienen bloqueo para múltiples usuarios.
 - La TUI refresca bajo demanda, no en tiempo real.
 - El agent store se deriva del task store salvo que se indique otra ruta.

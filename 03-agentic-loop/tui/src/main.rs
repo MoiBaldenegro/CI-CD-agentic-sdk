@@ -136,9 +136,13 @@ Opciones:
   -h, --help        Muestra esta ayuda
 
 Variables de entorno:
-  AGENTIC_LOOP_BRIDGE   Ruta al bridge JS
-  AGENTIC_LOOP_NODE     Ejecutable de Node
-  AGENTIC_LOOP_STORE    Store de tareas
+  AGENTIC_LOOP_BRIDGE             Ruta al bridge JS
+  AGENTIC_LOOP_NODE               Ejecutable de Node
+  AGENTIC_LOOP_STORE              Store de tareas
+  AGENTIC_LOOP_WORKSPACE          Checkout por defecto para OpenCode
+  AGENTIC_LOOP_OPENCODE_URL       Servidor OpenCode existente
+  AGENTIC_LOOP_OPENCODE_AGENT     Agente OpenCode (default: build)
+  AGENTIC_LOOP_SIMULATE=1         Usa adaptadores simulados
 
 Ejemplos:
   pnpm build

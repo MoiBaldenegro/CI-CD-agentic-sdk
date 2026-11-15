@@ -9,6 +9,7 @@ import type { AgentOutcomeValue } from "../../core/domain/outbound/AgentGateway.
 import { AgentRef } from "../../core/domain/value-objects/AgentRef.vo.js";
 import { DomainException } from "../../shared/DomainException.js";
 import { AgentGatewayRouter } from "../agents/AgentGatewayRouter.js";
+import { OpenCodeAgentAdapter } from "../agents/OpenCodeAgentAdapter.js";
 import { SimulatedAgentAdapter } from "../agents/SimulatedAgentAdapter.js";
 import { StaticAgentRegistry } from "../agents/StaticAgentRegistry.js";
 import { ConsoleEventPublisher } from "../events/ConsoleEventPublisher.js";
@@ -36,6 +37,7 @@ const CLI_OPTIONS = {
   model: { type: "string" },
   capabilities: { type: "string" },
   outcome: { type: "string" },
+  workspace: { type: "string" },
   timeout: { type: "string" },
   max: { type: "string" },
   reason: { type: "string" },
@@ -77,8 +79,16 @@ async function main(): Promise<void> {
   const registry = new StaticAgentRegistry(defaultAgents());
   const gateway = new AgentGatewayRouter();
   const outcome = parseOutcome(values.outcome);
+  const simulate = command === "demo" || process.env.AGENTIC_LOOP_SIMULATE === "1";
 
-  gateway.register(new SimulatedAgentAdapter("opencode", outcome));
+  gateway.register(
+    simulate
+      ? new SimulatedAgentAdapter("opencode", outcome)
+      : new OpenCodeAgentAdapter({
+          provider: "opencode",
+          ...(values.workspace !== undefined && { workspace: values.workspace }),
+        }),
+  );
   gateway.register(new SimulatedAgentAdapter("claude", outcome));
 
   const app = new AgenticLoopApplication({
@@ -424,8 +434,19 @@ Execution options:
   --capabilities <a,b,c>              Required agent capabilities
   --provider <slug>                   Preferred agent provider
   --timeout <ms>
+  --workspace <path>                  Repository checkout for OpenCode
   --outcome <SUCCESS|FAILURE|BLOCKED> Simulated agent result
   --stop-on-error                     Stop the loop on the first failure
+
+OpenCode environment:
+  AGENTIC_LOOP_WORKSPACE              Default workspace (default: current directory)
+  AGENTIC_LOOP_OPENCODE_URL           Connect to an existing OpenCode server
+  AGENTIC_LOOP_OPENCODE_AGENT         OpenCode agent name (default: build)
+  AGENTIC_LOOP_OPENCODE_PROVIDER      Provider for bare model ids (default: opencode)
+  AGENTIC_LOOP_OPENCODE_TIMEOUT_MS    Execution timeout (default: 900000)
+  AGENTIC_LOOP_OPENCODE_STARTUP_TIMEOUT_MS  Server startup timeout (default: 10000)
+  AGENTIC_LOOP_OPENCODE_WEBFETCH=1    Allow webfetch (default: denied)
+  AGENTIC_LOOP_SIMULATE=1             Use simulated adapters instead
 
 Global options:
   --store <path>                      Default: ${DEFAULT_STORE}

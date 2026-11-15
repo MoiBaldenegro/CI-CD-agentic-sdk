@@ -1,3 +1,4 @@
+import { DomainException } from "../../shared/DomainException.js";
 import type {
   AgentExecutionRequest,
   AgentExecutionResult,
@@ -9,12 +10,14 @@ export interface AgentAdapter {
   execute(request: AgentExecutionRequest): Promise<AgentExecutionResult>;
 }
 
-export class AgentNotRegisteredError extends Error {
+export class AgentNotRegisteredError extends DomainException {
+  readonly statusCode = 503;
   readonly provider: string;
 
   constructor(provider: string) {
-    super(`No agent adapter registered for provider "${provider}"`);
-    this.name = "AgentNotRegisteredError";
+    super("AGENT_NOT_REGISTERED", `No agent adapter registered for provider "${provider}"`, {
+      provider,
+    });
     this.provider = provider;
   }
 }

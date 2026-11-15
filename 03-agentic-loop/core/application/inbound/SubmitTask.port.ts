@@ -34,6 +34,6 @@ export interface SubmitTaskResult {
   readonly version: number;
 }
 
-export interface SubmitTaskUseCase {
+export interface SubmitTaskPort {
   execute(command: SubmitTaskCommand): Promise<SubmitTaskResult>;
 }

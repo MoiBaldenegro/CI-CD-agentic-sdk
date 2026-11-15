@@ -21,11 +21,27 @@ export type { TaskStatusValue } from "./value-objects/TaskStatus.vo.js";
 export { TaskTitle } from "./value-objects/TaskTitle.vo.js";
 
 export { DomainError } from "../../shared/DomainError.js";
+export type { DomainErrorPayload } from "../../shared/DomainError.js";
+export { DomainException } from "../../shared/DomainException.js";
+export type { ProblemDetails } from "../../shared/DomainException.js";
 export { DomainValidationError } from "../../shared/DomainValidationError.js";
 export { InvalidStateTransitionError } from "../../shared/InvalidStateTransitionError.js";
 export { ValueObject } from "../../shared/ValueObject.js";
 export { BaseDomainEvent } from "../../shared/DomainEvent.js";
 export type { DomainEvent } from "../../shared/DomainEvent.js";
+
+export { TaskAlreadyExistsError } from "./exceptions/TaskAlreadyExistsError.js";
+export { TaskNotFoundError } from "./exceptions/TaskNotFoundError.js";
+export { TaskSourceReferenceRequiredError } from "./exceptions/TaskSourceReferenceRequiredError.js";
+export { TaskTerminalStateError } from "./exceptions/TaskTerminalStateError.js";
+export { TaskVersionConflictError } from "./exceptions/TaskVersionConflictError.js";
+export { NoAgentAvailableError } from "./exceptions/NoAgentAvailableError.js";
+
+export { TaskAssignmentService } from "./services/TaskAssignmentService.js";
+export type { AssignTaskOptions } from "./services/TaskAssignmentService.js";
+export { TaskExecutionService } from "./services/TaskExecutionService.js";
+export { TaskPrioritizationService } from "./services/TaskPrioritizationService.js";
+export { TaskRegistrationService } from "./services/TaskRegistrationService.js";
 
 export { TaskCreatedEvent } from "./events/TaskCreated.event.js";
 export type { TaskCreatedPayload } from "./events/TaskCreated.event.js";

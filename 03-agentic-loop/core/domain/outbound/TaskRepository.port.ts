@@ -5,7 +5,9 @@ import type { TaskStatus } from "../value-objects/TaskStatus.vo.js";
 export interface TaskRepository {
   save(task: Task): Promise<void>;
   findById(id: TaskId): Promise<Task | null>;
+  findBySourceRef(source: string, externalId: string): Promise<Task | null>;
   findByStatus(status: TaskStatus, limit?: number): Promise<readonly Task[]>;
+  findAll(limit?: number): Promise<readonly Task[]>;
   findNext(limit?: number): Promise<readonly Task[]>;
   delete(id: TaskId): Promise<void>;
 }

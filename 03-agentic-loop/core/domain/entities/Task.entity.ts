@@ -17,6 +17,8 @@ import type { DomainEvent } from "../../../shared/DomainEvent.js";
 import { TaskAssignedEvent, TaskUnassignedEvent } from "../events/TaskAssigned.event.js";
 import { TaskCreatedEvent } from "../events/TaskCreated.event.js";
 import { TaskStatusChangedEvent } from "../events/TaskStatusChanged.event.js";
+import { TaskSourceReferenceRequiredError } from "../exceptions/TaskSourceReferenceRequiredError.js";
+import { TaskTerminalStateError } from "../exceptions/TaskTerminalStateError.js";
 
 const MAX_REASON_LENGTH = 2_000;
 
@@ -90,11 +92,7 @@ export class Task {
     const assignee = props.assignee ?? null;
 
     if (props.source.isExternalIssue() && sourceRef === null) {
-      throw new DomainValidationError(
-        "TASK_SOURCE_REF_REQUIRED",
-        `Task source ${props.source.value} requires an external reference`,
-        { source: props.source.value },
-      );
+      throw new TaskSourceReferenceRequiredError(props.source.value);
     }
 
     const task = new Task({
@@ -147,11 +145,7 @@ export class Task {
         : TaskSourceRef.from(primitives.sourceRef.externalId, primitives.sourceRef.url);
 
     if (source.isExternalIssue() && sourceRef === null) {
-      throw new DomainValidationError(
-        "TASK_SOURCE_REF_REQUIRED",
-        `Task source ${source.value} requires an external reference`,
-        { source: source.value },
-      );
+      throw new TaskSourceReferenceRequiredError(source.value);
     }
 
     return Task.reconstitute({
@@ -282,8 +276,12 @@ export class Task {
     this.transitionTo(TaskStatus.inProgress());
   }
 
-  submitForReview(): void {
-    this.transitionTo(TaskStatus.inReview());
+  submitForReview(reason: string | null = null): void {
+    const normalized =
+      reason === null || reason.trim().length === 0
+        ? null
+        : normalizeReason(reason, "TASK_REVIEW_REASON_INVALID", "reason");
+    this.transitionTo(TaskStatus.inReview(), normalized);
   }
 
   requestChanges(reason: string): void {
@@ -448,11 +446,7 @@ export class Task {
 
   private ensureMutable(): void {
     if (this.isTerminal()) {
-      throw new DomainValidationError(
-        "TASK_TERMINAL_STATE",
-        `Task ${this.id.value} is in terminal state ${this.status.value}`,
-        { taskId: this.id.value, status: this.status.value },
-      );
+      throw new TaskTerminalStateError(this.id.value, this.status.value);
     }
   }
 

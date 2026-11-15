@@ -1,0 +1,19 @@
+{
+  "name": "03-agentic-loop",
+  "version": "1.0.0",
+  "description": "Hexagonal agentic loop that turns issues into reviewed code changes",
+  "main": "dist/core/domain/index.js",
+  "types": "dist/core/domain/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

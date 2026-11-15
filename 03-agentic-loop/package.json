@@ -8,6 +8,10 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "cli": "pnpm build && node dist/infrastructure/cli/main.js",
+    "bridge": "pnpm build && node dist/infrastructure/cli/bridge.js",
+    "tui": "pnpm build && cargo run --manifest-path tui/Cargo.toml",
+    "tui:check": "pnpm build && cargo run --manifest-path tui/Cargo.toml -- --check",
+    "tui:build": "cargo build --manifest-path tui/Cargo.toml",
     "test": "node --test"
   },
   "keywords": [],
@@ -17,5 +21,8 @@
   "devDependencies": {
     "@types/node": "^26.6.6",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@opencode-ai/sdk": "^1.19.5"
   }
 }

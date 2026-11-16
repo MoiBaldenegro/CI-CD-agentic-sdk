@@ -8,7 +8,7 @@
     "start": "tsx infrastructure/cli/main.ts"
   },
   "dependencies": {
-    "@opencode/sdk": "^2.2.6",
+    "@opencode/sdk": "2.3.0",
     "dotenv": "^16.4.7"
   },
   "devDependencies": {

@@ -35,11 +35,19 @@ export async function main(): Promise<void> {
       console.log("Proveedor no válido. Usa 1 para OpenRouter o 2 para OpenCode.");
       return;
     }
+    const useOpenRouter = provider.trim() === "1";
+    const model = useOpenRouter
+      ? undefined
+      : await readline.question(
+          "Modelo OpenCode [1] automático [2] big-pickle [3] escribir ID: ",
+        );
+    const openCodeModel = useOpenRouter
+      ? undefined
+      : await selectOpenCodeModel(readline, model);
     const directoryInput = await readline.question(`Directorio [${process.cwd()}]: `);
     const directory = resolve(directoryInput.trim() || process.cwd());
     assertDirectoryExists(directory);
 
-    const useOpenRouter = provider.trim() === "1";
     const container = createContainer(useOpenRouter, directory);
     const agent = Agent.create({
       provider: useOpenRouter ? "openrouter" : "opencode",
@@ -57,7 +65,7 @@ export async function main(): Promise<void> {
 
     function createContainer(useOpenRouter: boolean, directory: string): ApplicationContainer {
       if (!useOpenRouter) {
-        return createOpenCodeApplicationContainer(directory);
+        return createOpenCodeApplicationContainer(directory, openCodeModel);
       }
 
       const apiKey = process.env.OPENROUTER_API_KEY;
@@ -78,6 +86,29 @@ export async function main(): Promise<void> {
   } finally {
     readline.close();
   }
+}
+
+async function selectOpenCodeModel(
+  readline: ReturnType<typeof createInterface>,
+  selection: string | undefined,
+): Promise<string | undefined> {
+  if (selection?.trim() === "1" || selection?.trim().length === 0) {
+    return undefined;
+  }
+
+  if (selection?.trim() === "2") {
+    return "opencode/big-pickle";
+  }
+
+  if (selection?.trim() === "3") {
+    const model = await readline.question("ID del modelo (provider/model): ");
+    if (model.trim().length === 0) {
+      throw new Error("El ID del modelo no puede estar vacío.");
+    }
+    return model.trim();
+  }
+
+  throw new Error("Selección de modelo no válida. Usa 1, 2 o 3.");
 }
 
 function assertDirectoryExists(directory: string): void {

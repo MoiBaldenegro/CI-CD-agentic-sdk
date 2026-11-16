@@ -8,7 +8,7 @@ import { TaskCreationService } from "../../core/domain/services/TaskCreationServ
 import { TaskPersistenceService } from "../../core/domain/services/TaskPersistenceService.js";
 import { TaskValidationService } from "../../core/domain/services/TaskValidationService.js";
 import type { AgentGateway } from "../../core/domain/outbound/AgentGateway.port.js";
-import { OpenCodeAgentAdapter } from "../agents/OpenCodeAgentAdapter.js";
+import { OpenCodeCliAgentAdapter } from "../agents/OpenCodeCliAgentAdapter.js";
 import { OpenRouterAgentAdapter } from "../agents/OpenRouterAgentAdapter.js";
 import { InMemoryTaskRepository } from "../persistence/InMemoryTaskRepository.js";
 
@@ -38,8 +38,9 @@ export function createApplicationContainer(gateway: AgentGateway): ApplicationCo
 
 export function createOpenCodeApplicationContainer(
   directory: string,
+  model?: string,
 ): ApplicationContainer {
-  return createApplicationContainer(new OpenCodeAgentAdapter({ directory }));
+  return createApplicationContainer(new OpenCodeCliAgentAdapter({ directory, model }));
 }
 
 export function createOpenRouterApplicationContainer(

@@ -1,4 +1,33 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build output
 dist/
-.agentic-loop/
+build/
 target/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# Local runtime and tool state
+.agentic-loop/
+.cache/
+.turbo/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Editor and operating system files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

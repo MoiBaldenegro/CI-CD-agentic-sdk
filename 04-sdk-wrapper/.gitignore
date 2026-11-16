@@ -1,2 +1,18 @@
+# Environment and secrets
 .env
+.env.*
+!.env.example
+
+# Dependencies
 node_modules/
+
+# Build and test output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp

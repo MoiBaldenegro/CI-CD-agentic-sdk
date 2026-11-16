@@ -285,6 +285,8 @@ pub struct Task {
     pub assignee: Option<Assignee>,
     #[serde(rename = "acceptanceCriteria", default)]
     pub acceptance_criteria: Vec<String>,
+    #[serde(default)]
+    pub metadata: BTreeMap<String, String>,
     #[serde(rename = "createdAt", default)]
     pub created_at: String,
     #[serde(rename = "updatedAt", default)]

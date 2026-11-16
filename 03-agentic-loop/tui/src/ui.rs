@@ -901,6 +901,10 @@ fn task_detail(task: &Task, width: u16) -> Vec<Line<'static>> {
         field_line("FUENTE", task.source.clone()),
     ];
 
+    if let Some(workspace) = task.metadata.get("workspace") {
+        lines.push(field_line("WORKSPACE", workspace.clone()));
+    }
+
     if let Some(source_ref) = &task.source_ref {
         let url = source_ref
             .url
@@ -1246,6 +1250,7 @@ mod tests {
                 "La bienvenida explica los tres pasos".to_string(),
                 "El footer muestra atajos contextuales".to_string(),
             ],
+            metadata: Default::default(),
             created_at: "2026-11-15T12:00:00.000Z".to_string(),
             updated_at: "2026-11-15T12:30:00.000Z".to_string(),
             version: 2,

@@ -8,6 +8,8 @@ import { TaskCreationService } from "../../core/domain/services/TaskCreationServ
 import { TaskPersistenceService } from "../../core/domain/services/TaskPersistenceService.js";
 import { TaskValidationService } from "../../core/domain/services/TaskValidationService.js";
 import type { AgentGateway } from "../../core/domain/outbound/AgentGateway.port.js";
+import { OpenCodeAgentAdapter } from "../agents/OpenCodeAgentAdapter.js";
+import { OpenRouterAgentAdapter } from "../agents/OpenRouterAgentAdapter.js";
 import { InMemoryTaskRepository } from "../persistence/InMemoryTaskRepository.js";
 
 export interface ApplicationContainer {
@@ -32,4 +34,16 @@ export function createApplicationContainer(gateway: AgentGateway): ApplicationCo
     tasks: new TaskApplicationService(createTaskUseCase, getTaskUseCase),
     agents: new AgentApplicationService(sendAgentPromptUseCase),
   };
+}
+
+export function createOpenCodeApplicationContainer(
+  directory: string,
+): ApplicationContainer {
+  return createApplicationContainer(new OpenCodeAgentAdapter({ directory }));
+}
+
+export function createOpenRouterApplicationContainer(
+  options: ConstructorParameters<typeof OpenRouterAgentAdapter>[0],
+): ApplicationContainer {
+  return createApplicationContainer(new OpenRouterAgentAdapter(options));
 }

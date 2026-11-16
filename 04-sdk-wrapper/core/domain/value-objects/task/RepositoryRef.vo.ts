@@ -1,4 +1,4 @@
-import { DomainValidationError } from "../exceptions/DomainValidationError.js";
+import { DomainValidationError } from "../../exceptions/DomainValidationError.js";
 import { ValueObject } from "../ValueObject.js";
 
 const NAME_PATTERN = /^[A-Za-z0-9._-]+$/;

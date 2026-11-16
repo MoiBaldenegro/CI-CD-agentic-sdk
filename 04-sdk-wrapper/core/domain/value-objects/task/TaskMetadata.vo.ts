@@ -1,4 +1,4 @@
-import { DomainValidationError } from "../exceptions/DomainValidationError.js";
+import { DomainValidationError } from "../../exceptions/DomainValidationError.js";
 import { ValueObject } from "../ValueObject.js";
 
 const MAX_ENTRIES = 50;

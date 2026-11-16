@@ -1,4 +1,4 @@
-import { DomainValidationError } from "../exceptions/DomainValidationError.js";
+import { DomainValidationError } from "../../exceptions/DomainValidationError.js";
 import { ValueObject } from "../ValueObject.js";
 
 export const TASK_SOURCE = {

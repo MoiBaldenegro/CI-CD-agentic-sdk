@@ -3,7 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "mxvi": "tsx infrastructure/cli/main.ts",
+    "start": "tsx infrastructure/cli/main.ts"
+  },
   "dependencies": {
-    "@opencode/sdk": "^2.2.6"
+    "@opencode/sdk": "^2.2.6",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
   }
 }

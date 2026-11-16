@@ -1,4 +1,4 @@
-import { DomainValidationError } from "../exceptions/DomainValidationError.js";
+import { DomainValidationError } from "../../exceptions/DomainValidationError.js";
 import { ValueObject } from "../ValueObject.js";
 
 const PROVIDER_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/;

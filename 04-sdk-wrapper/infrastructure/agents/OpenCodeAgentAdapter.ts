@@ -11,17 +11,25 @@ export interface OpenCodeAgentAdapterOptions {
 }
 
 export class OpenCodeAgentAdapter implements AgentGateway {
-  constructor(private readonly options: OpenCodeAgentAdapterOptions) {}
+  private readonly opencode: ReturnType<typeof OpenCode.create>;
+  private readonly session: Promise<{ readonly id: string }>;
+
+  constructor(private readonly options: OpenCodeAgentAdapterOptions) {
+    this.opencode = OpenCode.create();
+    this.session = this.opencode.then((client) =>
+      client.sessions.create({
+        location: { directory: this.options.directory },
+      }),
+    );
+  }
 
   async sendPrompt(agent: AgentPrimitives, prompt: AgentPrompt): Promise<AgentResponse> {
     if (agent.provider !== "opencode") {
       throw new Error(`Unsupported agent provider: ${agent.provider}`);
     }
 
-    await using opencode = await OpenCode.create();
-    const session = await opencode.sessions.create({
-      location: { directory: this.options.directory },
-    });
+    const opencode = await this.opencode;
+    const session = await this.session;
 
     await opencode.sessions.prompt({
       sessionID: session.id,
@@ -34,27 +42,74 @@ export class OpenCodeAgentAdapter implements AgentGateway {
       sessionID: session.id,
     });
 
+    const text = extractResponseText(messages);
+    if (text.length === 0) {
+      const providerError = extractProviderError(messages);
+      if (providerError !== null) {
+        throw new Error(`OpenCode no pudo completar la solicitud: ${providerError}`);
+      }
+
+      throw new Error(`OpenCode no devolvió texto para la sesión ${session.id}`);
+    }
+
     return {
       sessionId: session.id,
-      text: extractResponseText(messages),
+      text,
     };
   }
 }
 
 function extractResponseText(value: unknown): string {
-  const texts: string[] = [];
-  collectAssistantText(value, texts);
-  return texts.join("\n").trim();
+  const responses: string[][] = [];
+  collectAssistantResponses(value, responses);
+  return responses.at(-1)?.join("\n").trim() ?? "";
 }
 
-function collectAssistantText(value: unknown, texts: string[]): void {
+function collectAssistantResponses(value: unknown, responses: string[][]): void {
   if (Array.isArray(value)) {
     for (const item of value) {
-      if (isRecord(item) && item.type === "assistant") {
-        collectContent(item.content, texts);
-      }
+      collectAssistantResponses(item, responses);
+    }
+    return;
+  }
+
+  if (!isRecord(value)) return;
+
+  const info = isRecord(value.info) ? value.info : value;
+  if (info.role === "assistant" || value.type === "assistant") {
+    const texts: string[] = [];
+    collectContent(value.parts ?? value.content, texts);
+
+    if (texts.length > 0) {
+      responses.push(texts);
     }
   }
+
+  if ("data" in value) {
+    collectAssistantResponses(value.data, responses);
+  }
+}
+
+function extractProviderError(value: unknown): string | null {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const error = extractProviderError(item);
+      if (error !== null) return error;
+    }
+    return null;
+  }
+
+  if (!isRecord(value)) return null;
+
+  if (isRecord(value.error) && typeof value.error.message === "string") {
+    return value.error.message;
+  }
+
+  if ("data" in value) {
+    return extractProviderError(value.data);
+  }
+
+  return null;
 }
 
 function collectContent(value: unknown, texts: string[]): void {

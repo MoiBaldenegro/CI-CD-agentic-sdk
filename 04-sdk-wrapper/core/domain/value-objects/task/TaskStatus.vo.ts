@@ -1,5 +1,5 @@
-import { DomainValidationError } from "../exceptions/DomainValidationError.js";
-import { InvalidStateTransitionError } from "../../../shared/InvalidStateTransitionError.js";
+import { DomainValidationError } from "../../exceptions/DomainValidationError.js";
+import { InvalidStateTransitionError } from "../../exceptions/InvalidStateTransitionError.js";
 import { ValueObject } from "../ValueObject.js";
 
 export const TASK_STATUS = {

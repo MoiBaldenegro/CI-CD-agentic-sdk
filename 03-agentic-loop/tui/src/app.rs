@@ -835,6 +835,13 @@ mod tests {
     }
 
     #[test]
+    fn submit_form_includes_workspace() {
+        let form = submit_task_form();
+
+        assert!(form.fields.iter().any(|field| field.label == "Workspace"));
+    }
+
+    #[test]
     fn welcome_is_skipped_when_disconnected() {
         let mut app = app();
         app.connection = Connection::Disconnected("sin bridge".to_string());

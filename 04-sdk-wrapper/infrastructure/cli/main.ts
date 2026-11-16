@@ -65,7 +65,11 @@ export async function main(): Promise<void> {
 
     function createContainer(useOpenRouter: boolean, directory: string): ApplicationContainer {
       if (!useOpenRouter) {
-        return createOpenCodeApplicationContainer(directory, openCodeModel);
+        return createOpenCodeApplicationContainer(
+          directory,
+          openCodeModel,
+          process.env.OPENCODE_SYSTEM_PROMPT,
+        );
       }
 
       const apiKey = process.env.OPENROUTER_API_KEY;

@@ -39,8 +39,11 @@ export function createApplicationContainer(gateway: AgentGateway): ApplicationCo
 export function createOpenCodeApplicationContainer(
   directory: string,
   model?: string,
+  systemPrompt?: string,
 ): ApplicationContainer {
-  return createApplicationContainer(new OpenCodeCliAgentAdapter({ directory, model }));
+  return createApplicationContainer(
+    new OpenCodeCliAgentAdapter({ directory, model, systemPrompt }),
+  );
 }
 
 export function createOpenRouterApplicationContainer(

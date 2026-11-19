@@ -1,0 +1,226 @@
+/* =============================================================
+   Aurora DS — Design Tokens
+   Capa 1: primitivos  ·  Capa 2: semánticos  ·  Capa 3: componentes
+   ============================================================= */
+
+:root {
+  /* ---------- Primitivos · Violeta (marca) ---------- */
+  --ds-violet-50: #f4f2ff;
+  --ds-violet-100: #ebe7ff;
+  --ds-violet-200: #d9d2ff;
+  --ds-violet-300: #bfb2ff;
+  --ds-violet-400: #9f88ff;
+  --ds-violet-500: #7f5cff;
+  --ds-violet-600: #6a3df0;
+  --ds-violet-700: #572bd1;
+  --ds-violet-800: #4825a9;
+  --ds-violet-900: #3b2187;
+  --ds-violet-950: #241350;
+
+  /* ---------- Primitivos · Cian (acento) ---------- */
+  --ds-cyan-50: #ecfeff;
+  --ds-cyan-100: #cffafe;
+  --ds-cyan-200: #a5f3fc;
+  --ds-cyan-300: #67e8f9;
+  --ds-cyan-400: #22d3ee;
+  --ds-cyan-500: #06b6d4;
+  --ds-cyan-600: #0891b2;
+  --ds-cyan-700: #0e7490;
+
+  /* ---------- Primitivos · Neutros ---------- */
+  --ds-gray-0: #ffffff;
+  --ds-gray-25: #fcfcfd;
+  --ds-gray-50: #f8f8fb;
+  --ds-gray-100: #f1f1f6;
+  --ds-gray-200: #e5e5ee;
+  --ds-gray-300: #d2d2e0;
+  --ds-gray-400: #a5a5b8;
+  --ds-gray-500: #7c7c93;
+  --ds-gray-600: #5b5b72;
+  --ds-gray-700: #444458;
+  --ds-gray-800: #2c2c3d;
+  --ds-gray-900: #1b1b28;
+  --ds-gray-950: #101018;
+
+  /* ---------- Primitivos · Estados ---------- */
+  --ds-green-50: #ecfdf5;
+  --ds-green-500: #10b981;
+  --ds-green-600: #059669;
+  --ds-green-700: #047857;
+
+  --ds-amber-50: #fffbeb;
+  --ds-amber-500: #f59e0b;
+  --ds-amber-600: #d97706;
+  --ds-amber-700: #b45309;
+
+  --ds-red-50: #fef2f2;
+  --ds-red-500: #ef4444;
+  --ds-red-600: #dc2626;
+  --ds-red-700: #b91c1c;
+  --ds-red-800: #991b1b;
+
+  --ds-blue-50: #eff6ff;
+  --ds-blue-500: #3b82f6;
+  --ds-blue-600: #2563eb;
+  --ds-blue-700: #1d4ed8;
+
+  /* ---------- Tipografía ---------- */
+  --ds-font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ds-font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  --ds-text-2xs: 0.6875rem; /* 11px */
+  --ds-text-xs: 0.75rem; /* 12px */
+  --ds-text-sm: 0.875rem; /* 14px */
+  --ds-text-base: 1rem; /* 16px */
+  --ds-text-lg: 1.125rem; /* 18px */
+  --ds-text-xl: 1.25rem; /* 20px */
+  --ds-text-2xl: 1.5rem; /* 24px */
+  --ds-text-3xl: 1.875rem; /* 30px */
+  --ds-text-4xl: 2.25rem; /* 36px */
+  --ds-text-5xl: 3rem; /* 48px */
+  --ds-text-6xl: 3.75rem; /* 60px */
+
+  --ds-leading-tight: 1.15;
+  --ds-leading-snug: 1.35;
+  --ds-leading-normal: 1.6;
+
+  --ds-weight-regular: 400;
+  --ds-weight-medium: 500;
+  --ds-weight-semibold: 600;
+  --ds-weight-bold: 700;
+
+  --ds-tracking-tight: -0.02em;
+  --ds-tracking-wide: 0.08em;
+
+  /* ---------- Espaciado · grid de 4px ---------- */
+  --ds-space-0: 0;
+  --ds-space-1: 0.25rem;
+  --ds-space-2: 0.5rem;
+  --ds-space-3: 0.75rem;
+  --ds-space-4: 1rem;
+  --ds-space-5: 1.25rem;
+  --ds-space-6: 1.5rem;
+  --ds-space-8: 2rem;
+  --ds-space-10: 2.5rem;
+  --ds-space-12: 3rem;
+  --ds-space-16: 4rem;
+  --ds-space-20: 5rem;
+  --ds-space-24: 6rem;
+
+  /* ---------- Radios ---------- */
+  --ds-radius-xs: 0.25rem;
+  --ds-radius-sm: 0.375rem;
+  --ds-radius-md: 0.625rem;
+  --ds-radius-lg: 0.875rem;
+  --ds-radius-xl: 1.25rem;
+  --ds-radius-2xl: 1.75rem;
+  --ds-radius-full: 9999px;
+
+  /* ---------- Sombras ---------- */
+  --ds-shadow-xs: 0 1px 2px rgba(16, 16, 24, 0.06);
+  --ds-shadow-sm: 0 1px 3px rgba(16, 16, 24, 0.08), 0 1px 2px rgba(16, 16, 24, 0.04);
+  --ds-shadow-md: 0 8px 20px -6px rgba(16, 16, 24, 0.14), 0 2px 6px rgba(16, 16, 24, 0.06);
+  --ds-shadow-lg: 0 20px 40px -16px rgba(16, 16, 24, 0.24), 0 6px 14px rgba(16, 16, 24, 0.08);
+  --ds-shadow-glow: 0 0 0 1px rgba(127, 92, 255, 0.24), 0 12px 40px -12px rgba(127, 92, 255, 0.5);
+
+  /* ---------- Movimiento ---------- */
+  --ds-duration-fast: 120ms;
+  --ds-duration-base: 200ms;
+  --ds-duration-slow: 360ms;
+  --ds-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ds-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---------- Layout ---------- */
+  --ds-sidebar-width: 17.5rem;
+  --ds-content-max: 76rem;
+  --ds-topbar-height: 4rem;
+
+  /* =============================================================
+     Semánticos · tema claro
+     ============================================================= */
+  --ds-color-canvas: var(--ds-gray-50);
+  --ds-color-surface: var(--ds-gray-0);
+  --ds-color-surface-raised: var(--ds-gray-0);
+  --ds-color-surface-sunken: var(--ds-gray-100);
+  --ds-color-surface-muted: var(--ds-gray-50);
+  --ds-color-sidebar: #fbfbfe;
+
+  --ds-color-text: var(--ds-gray-900);
+  --ds-color-text-secondary: var(--ds-gray-600);
+  --ds-color-text-muted: var(--ds-gray-500);
+  --ds-color-text-inverse: var(--ds-gray-0);
+
+  --ds-color-border: var(--ds-gray-200);
+  --ds-color-border-strong: var(--ds-gray-300);
+
+  --ds-color-primary: var(--ds-violet-600);
+  --ds-color-primary-hover: var(--ds-violet-700);
+  --ds-color-primary-active: var(--ds-violet-800);
+  --ds-color-primary-soft: var(--ds-violet-100);
+  --ds-color-primary-contrast: #ffffff;
+
+  --ds-color-accent: var(--ds-cyan-500);
+  --ds-color-accent-soft: var(--ds-cyan-100);
+
+  --ds-color-success: var(--ds-green-700);
+  --ds-color-success-soft: var(--ds-green-50);
+  --ds-color-warning: var(--ds-amber-700);
+  --ds-color-warning-soft: var(--ds-amber-50);
+  --ds-color-danger: var(--ds-red-700);
+  --ds-color-danger-soft: var(--ds-red-50);
+  --ds-color-info: var(--ds-blue-600);
+  --ds-color-info-soft: var(--ds-blue-50);
+
+  --ds-color-focus-ring: var(--ds-violet-500);
+
+  /* Gradientes de marca */
+  --ds-gradient-brand: linear-gradient(135deg, var(--ds-violet-600) 0%, var(--ds-violet-500) 45%, var(--ds-cyan-500) 100%);
+  --ds-gradient-hero: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(127, 92, 255, 0.16), transparent 70%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ds-color-canvas: #0c0c14;
+  --ds-color-surface: #14141f;
+  --ds-color-surface-raised: #191926;
+  --ds-color-surface-sunken: #0f0f18;
+  --ds-color-surface-muted: #171724;
+  --ds-color-sidebar: #101019;
+
+  --ds-color-text: #f2f2f7;
+  --ds-color-text-secondary: #b4b4c6;
+  --ds-color-text-muted: #8a8aa0;
+  --ds-color-text-inverse: var(--ds-gray-950);
+
+  --ds-color-border: #262636;
+  --ds-color-border-strong: #34344a;
+
+  --ds-color-primary: var(--ds-violet-400);
+  --ds-color-primary-hover: var(--ds-violet-300);
+  --ds-color-primary-active: var(--ds-violet-200);
+  --ds-color-primary-soft: rgba(127, 92, 255, 0.18);
+  --ds-color-primary-contrast: #17102e;
+
+  --ds-color-accent: var(--ds-cyan-400);
+  --ds-color-accent-soft: rgba(34, 211, 238, 0.16);
+
+  --ds-color-success: #34d399;
+  --ds-color-success-soft: rgba(16, 185, 129, 0.16);
+  --ds-color-warning: #fbbf24;
+  --ds-color-warning-soft: rgba(245, 158, 11, 0.16);
+  --ds-color-danger: #f87171;
+  --ds-color-danger-soft: rgba(239, 68, 68, 0.16);
+  --ds-color-info: #60a5fa;
+  --ds-color-info-soft: rgba(59, 130, 246, 0.16);
+
+  --ds-color-focus-ring: var(--ds-violet-400);
+
+  --ds-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ds-shadow-md: 0 10px 24px -8px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.45);
+  --ds-shadow-lg: 0 24px 48px -20px rgba(0, 0, 0, 0.8), 0 6px 16px rgba(0, 0, 0, 0.5);
+  --ds-shadow-glow: 0 0 0 1px rgba(159, 136, 255, 0.3), 0 16px 44px -14px rgba(127, 92, 255, 0.55);
+
+  --ds-gradient-hero: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(127, 92, 255, 0.26), transparent 70%);
+}

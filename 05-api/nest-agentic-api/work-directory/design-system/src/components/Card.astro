@@ -1,0 +1,107 @@
+---
+interface Props {
+  title?: string;
+  eyebrow?: string;
+  interactive?: boolean;
+  padding?: "sm" | "md" | "lg";
+  class?: string;
+}
+
+const {
+  title,
+  eyebrow,
+  interactive = false,
+  padding = "md",
+  class: className = "",
+} = Astro.props;
+---
+
+<article
+  class:list={["ds-card", `ds-card--pad-${padding}`, interactive && "ds-card--interactive", className]}
+>
+  {
+    (eyebrow || title) && (
+      <header class="ds-card__header">
+        {eyebrow && <p class="ds-card__eyebrow">{eyebrow}</p>}
+        {title && <h3 class="ds-card__title">{title}</h3>}
+      </header>
+    )
+  }
+  <div class="ds-card__body">
+    <slot />
+  </div>
+  {
+    Astro.slots.has("footer") && (
+      <footer class="ds-card__footer">
+        <slot name="footer" />
+      </footer>
+    )
+  }
+</article>
+
+<style>
+  .ds-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--ds-color-surface);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-xs);
+    overflow: hidden;
+    transition: border-color var(--ds-duration-base) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-base) var(--ds-ease-standard),
+      transform var(--ds-duration-base) var(--ds-ease-standard);
+  }
+
+  .ds-card--interactive:hover {
+    border-color: var(--ds-color-primary);
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .ds-card--pad-sm {
+    padding: var(--ds-space-4);
+  }
+  .ds-card--pad-md {
+    padding: var(--ds-space-6);
+  }
+  .ds-card--pad-lg {
+    padding: var(--ds-space-8);
+  }
+
+  .ds-card__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+    margin-bottom: var(--ds-space-3);
+  }
+
+  .ds-card__eyebrow {
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-color-primary);
+  }
+
+  .ds-card__title {
+    font-size: var(--ds-text-lg);
+    font-weight: var(--ds-weight-semibold);
+  }
+
+  .ds-card__body {
+    flex: 1;
+    color: var(--ds-color-text-secondary);
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+
+  .ds-card__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-5);
+    padding-top: var(--ds-space-4);
+    border-top: 1px solid var(--ds-color-border);
+  }
+</style>

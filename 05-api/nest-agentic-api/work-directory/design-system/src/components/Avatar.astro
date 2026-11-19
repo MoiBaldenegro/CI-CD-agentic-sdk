@@ -1,0 +1,99 @@
+---
+interface Props {
+  name: string;
+  src?: string;
+  size?: "sm" | "md" | "lg";
+  status?: "online" | "offline" | "busy";
+}
+
+const { name, src, size = "md", status } = Astro.props;
+
+const initials = name
+  .split(" ")
+  .map((part) => part[0])
+  .slice(0, 2)
+  .join("")
+  .toUpperCase();
+---
+
+<span class:list={["ds-avatar", `ds-avatar--${size}`]} title={name}>
+  {src ? <img src={src} alt={name} /> : <span aria-hidden="true">{initials}</span>}
+  {status && <span class:list={["ds-avatar__status", `ds-avatar__status--${status}`]} aria-hidden="true"></span>}
+  <span class="ds-sr-only">{name}</span>
+</span>
+
+<style>
+  .ds-avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-gradient-brand);
+    color: #ffffff;
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: 0.02em;
+    border: 2px solid var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-sm);
+    overflow: visible;
+  }
+
+  .ds-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  .ds-avatar--sm {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: var(--ds-text-2xs);
+  }
+  .ds-avatar--md {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: var(--ds-text-sm);
+  }
+  .ds-avatar--lg {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: var(--ds-text-lg);
+  }
+
+  .ds-avatar__status {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: var(--ds-radius-full);
+    border: 2px solid var(--ds-color-surface);
+    background: var(--ds-color-text-muted);
+  }
+
+  .ds-avatar--lg .ds-avatar__status {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .ds-avatar__status--online {
+    background: var(--ds-color-success);
+  }
+  .ds-avatar__status--busy {
+    background: var(--ds-color-danger);
+  }
+
+  .ds-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

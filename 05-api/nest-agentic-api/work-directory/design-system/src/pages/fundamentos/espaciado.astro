@@ -1,0 +1,378 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+
+const spacing = [
+  { token: "--ds-space-1", rem: "0.25rem", px: 4 },
+  { token: "--ds-space-2", rem: "0.5rem", px: 8 },
+  { token: "--ds-space-3", rem: "0.75rem", px: 12 },
+  { token: "--ds-space-4", rem: "1rem", px: 16 },
+  { token: "--ds-space-5", rem: "1.25rem", px: 20 },
+  { token: "--ds-space-6", rem: "1.5rem", px: 24 },
+  { token: "--ds-space-8", rem: "2rem", px: 32 },
+  { token: "--ds-space-10", rem: "2.5rem", px: 40 },
+  { token: "--ds-space-12", rem: "3rem", px: 48 },
+  { token: "--ds-space-16", rem: "4rem", px: 64 },
+  { token: "--ds-space-20", rem: "5rem", px: 80 },
+  { token: "--ds-space-24", rem: "6rem", px: 96 },
+];
+
+const radii = [
+  { token: "--ds-radius-xs", value: "4 px", use: "Código inline, chips" },
+  { token: "--ds-radius-sm", value: "6 px", use: "Botones pequeños" },
+  { token: "--ds-radius-md", value: "10 px", use: "Inputs, botones, alertas" },
+  { token: "--ds-radius-lg", value: "14 px", use: "Tarjetas y paneles" },
+  { token: "--ds-radius-xl", value: "20 px", use: "Contenedores y modales" },
+  { token: "--ds-radius-2xl", value: "28 px", use: "Superficies de hero" },
+  { token: "--ds-radius-full", value: "9999 px", use: "Badges, avatares, píldoras" },
+];
+
+const shadows = [
+  { token: "--ds-shadow-xs", use: "Reposo de tarjetas y controles" },
+  { token: "--ds-shadow-sm", use: "Elevación sutil, avatares" },
+  { token: "--ds-shadow-md", use: "Hover de tarjetas, menús" },
+  { token: "--ds-shadow-lg", use: "Modales y drawers" },
+  { token: "--ds-shadow-glow", use: "Marca: logo y CTA destacada" },
+];
+
+const breakpoints = [
+  { name: "sm", min: "0", cols: "4", gutter: "16 px" },
+  { name: "md", min: "640 px", cols: "8", gutter: "20 px" },
+  { name: "lg", min: "960 px", cols: "12", gutter: "24 px" },
+  { name: "xl", min: "1280 px", cols: "12", gutter: "32 px" },
+  { name: "2xl", min: "1536 px", cols: "12", gutter: "32 px" },
+];
+---
+
+<Base title="Espaciado y layout" showToc>
+  <PageHeader
+    eyebrow="Fundamentos"
+    title="Espaciado y layout"
+    lead="Una retícula base de 4 px gobierna márgenes, padding y huecos. Radios, sombras y breakpoints se derivan de la misma escala para mantener el ritmo visual."
+    meta={["Retícula de 4 px", "12 columnas", "5 breakpoints"]}
+  />
+
+  <section class="block">
+    <h2>Escala de espaciado</h2>
+    <p class="ds-muted block__lead">
+      Todos los valores son múltiplos de 4 px. Si necesitas un valor intermedio, probablemente la
+      decisión de layout necesita simplificarse.
+    </p>
+    <div class="spacing">
+      {
+        spacing.map((item) => (
+          <div class="spacing__row">
+            <code class="spacing__token">{item.token}</code>
+            <div class="spacing__bar-wrap">
+              <span class="spacing__bar" style={`width:${item.px * 0.35}rem`}></span>
+            </div>
+            <span class="spacing__value">{item.rem}</span>
+            <span class="spacing__px">{item.px} px</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Radios</h2>
+    <div class="ds-grid ds-grid--4">
+      {
+        radii.map((item) => (
+          <div class="radius-card">
+            <span class="radius-card__preview" style={`border-radius:var(${item.token})`}></span>
+            <div>
+              <code>{item.token}</code>
+              <p>{item.value} · {item.use}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Sombras y elevación</h2>
+    <div class="shadow-grid">
+      {
+        shadows.map((item) => (
+          <div class="shadow-card" style={`box-shadow:var(${item.token})`}>
+            <code>{item.token}</code>
+            <p>{item.use}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Retícula de 12 columnas</h2>
+    <p class="ds-muted block__lead">
+      Contenido centrado con un ancho máximo de 76 rem. El sidebar de documentación ocupa 17,5 rem
+      en desktop y se convierte en drawer por debajo de 960 px.
+    </p>
+    <div class="grid-demo">
+      {Array.from({ length: 12 }).map((_, i) => <span>{i + 1}</span>)}
+    </div>
+
+    <div class="table-wrap">
+      <table class="bp-table">
+        <thead>
+          <tr><th>Breakpoint</th><th>Desde</th><th>Columnas</th><th>Gutter</th></tr>
+        </thead>
+        <tbody>
+          {
+            breakpoints.map((bp) => (
+              <tr>
+                <td><code>{bp.name}</code></td>
+                <td>{bp.min}</td>
+                <td>{bp.cols}</td>
+                <td>{bp.gutter}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Reglas de aplicación</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="rule-card">
+        <h3>Dentro de componentes</h3>
+        <p>
+          Padding estándar: <code>var(--ds-space-4)</code> para controles,
+          <code>var(--ds-space-6)</code> para tarjetas y <code>var(--ds-space-8)</code> para
+          contenedores de sección.
+        </p>
+      </div>
+      <div class="rule-card">
+        <h3>Entre secciones</h3>
+        <p>
+          Usa <code>var(--ds-space-10)</code> o <code>var(--ds-space-12)</code> para separar bloques
+          de contenido y <code>var(--ds-space-4)</code> entre elementos relacionados.
+        </p>
+      </div>
+      <div class="rule-card">
+        <h3>Nunca valores mágicos</h3>
+        <p>
+          Evita <code>13px</code>, <code>27px</code> o <code>0.9rem</code>. Si no está en la escala,
+          no pertenece al sistema.
+        </p>
+      </div>
+      <div class="rule-card">
+        <h3>Espacio negativo</h3>
+        <p>
+          El aire es parte del diseño. Mejor más espacio entre grupos que líneas divisorias
+          innecesarias.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+  .block h2 {
+    font-size: var(--ds-text-2xl);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-sm);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .spacing {
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    background: var(--ds-color-surface);
+  }
+  .spacing__row {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr) 5.5rem 4rem;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-2) var(--ds-space-5);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .spacing__row:last-child {
+    border-bottom: 0;
+  }
+  .spacing__token {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-primary);
+  }
+  .spacing__bar-wrap {
+    display: flex;
+  }
+  .spacing__bar {
+    height: 0.75rem;
+    border-radius: 3px;
+    background: var(--ds-gradient-brand);
+    min-width: 3px;
+  }
+  .spacing__value {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-secondary);
+  }
+  .spacing__px {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+    text-align: right;
+  }
+
+  .radius-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .radius-card__preview {
+    display: block;
+    height: 3.5rem;
+    background:
+      linear-gradient(135deg, var(--ds-color-primary-soft), var(--ds-color-surface-sunken));
+    border: 1px solid var(--ds-color-border-strong);
+  }
+  .radius-card code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-primary);
+  }
+  .radius-card p {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+    margin-top: 2px;
+  }
+
+  .shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-3);
+  }
+  .shadow-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-4);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    border: 1px solid var(--ds-color-border);
+  }
+  .shadow-card code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-primary);
+  }
+  .shadow-card p {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .grid-demo {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-4);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    border: 1px solid var(--ds-color-border);
+    margin-bottom: var(--ds-space-5);
+  }
+  .grid-demo span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.75rem;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-primary);
+    background: var(--ds-color-primary-soft);
+    border-radius: var(--ds-radius-xs);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .bp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    min-width: 480px;
+  }
+  .bp-table th {
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-color-text-muted);
+    background: var(--ds-color-surface-muted);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .bp-table td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-color-border);
+    color: var(--ds-color-text-secondary);
+  }
+  .bp-table tr:last-child td {
+    border-bottom: 0;
+  }
+  .bp-table code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-primary);
+  }
+
+  .rule-card {
+    padding: var(--ds-space-5);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .rule-card h3 {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+    margin-bottom: var(--ds-space-2);
+  }
+  .rule-card p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-normal);
+  }
+  .rule-card code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.82em;
+    padding: 0.1em 0.3em;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-color-surface-sunken);
+    color: var(--ds-color-text);
+  }
+
+  @media (max-width: 720px) {
+    .spacing__row {
+      grid-template-columns: 7.5rem minmax(0, 1fr) 4rem;
+    }
+    .spacing__px {
+      display: none;
+    }
+  }
+</style>

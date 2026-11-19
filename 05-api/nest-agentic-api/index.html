@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saludo para Moises Baldenegro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+      color: #fff;
+      padding: 24px;
+    }
+    .card {
+      max-width: 640px;
+      width: 100%;
+      text-align: center;
+      padding: 56px 40px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(12px);
+      animation: fadeIn 0.8s ease-out;
+    }
+    .wave {
+      font-size: 64px;
+      display: inline-block;
+      animation: wave 2s infinite;
+      transform-origin: 70% 70%;
+    }
+    h1 {
+      margin-top: 16px;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #93c5fd, #c4b5fd, #f0abfc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p {
+      margin-top: 18px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.78);
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 28px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      border-radius: 999px;
+      background: rgba(147, 197, 253, 0.15);
+      border: 1px solid rgba(147, 197, 253, 0.35);
+      color: #bfdbfe;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wave {
+      0%, 60%, 100% { transform: rotate(0deg); }
+      10%, 30% { transform: rotate(16deg); }
+      20%, 40% { transform: rotate(-8deg); }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <span class="wave">👋</span>
+    <h1>¡Hola, Moises Baldenegro!</h1>
+    <p>Bienvenido a tu página de saludo. Que tengas un excelente día, mi rey.</p>
+    <span class="badge">Servido en el puerto 6666</span>
+  </main>
+</body>
+</html>

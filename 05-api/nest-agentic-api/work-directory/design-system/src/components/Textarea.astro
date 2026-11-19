@@ -1,0 +1,115 @@
+---
+interface Props {
+  label: string;
+  name: string;
+  placeholder?: string;
+  hint?: string;
+  error?: string;
+  rows?: number;
+  required?: boolean;
+  disabled?: boolean;
+}
+
+const {
+  label,
+  name,
+  placeholder,
+  hint,
+  error,
+  rows = 4,
+  required = false,
+  disabled = false,
+} = Astro.props;
+
+const id = `textarea-${name}`;
+---
+
+<div class:list={["ds-field", error && "ds-field--invalid"]}>
+  <label class="ds-field__label" for={id}>
+    {label}
+    {required && <span class="ds-field__required" aria-hidden="true">*</span>}
+  </label>
+  <textarea
+    class="ds-field__input ds-field__input--area"
+    id={id}
+    name={name}
+    rows={rows}
+    placeholder={placeholder}
+    required={required}
+    disabled={disabled}
+    aria-invalid={error ? "true" : undefined}
+  ></textarea>
+  {error && <p class="ds-field__hint ds-field__hint--error">{error}</p>}
+  {!error && hint && <p class="ds-field__hint">{hint}</p>}
+</div>
+
+<style>
+  .ds-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+
+  .ds-field__label {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-text);
+  }
+
+  .ds-field__required {
+    color: var(--ds-color-danger);
+    margin-left: 0.15rem;
+  }
+
+  .ds-field__input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text);
+    background: var(--ds-color-surface);
+    border: 1px solid var(--ds-color-border-strong);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-xs);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .ds-field__input--area {
+    min-height: 6rem;
+    resize: vertical;
+    line-height: var(--ds-leading-normal);
+  }
+
+  .ds-field__input::placeholder {
+    color: var(--ds-color-text-muted);
+  }
+
+  .ds-field__input:hover:not(:disabled) {
+    border-color: var(--ds-color-text-muted);
+  }
+
+  .ds-field__input:focus {
+    outline: none;
+    border-color: var(--ds-color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-color-primary) 22%, transparent);
+  }
+
+  .ds-field__input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: var(--ds-color-surface-sunken);
+  }
+
+  .ds-field__hint {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .ds-field__hint--error {
+    color: var(--ds-color-danger);
+  }
+
+  .ds-field--invalid .ds-field__input {
+    border-color: var(--ds-color-danger);
+  }
+</style>

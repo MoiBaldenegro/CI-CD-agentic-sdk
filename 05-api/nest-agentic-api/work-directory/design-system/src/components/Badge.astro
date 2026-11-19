@@ -1,0 +1,76 @@
+---
+interface Props {
+  variant?: "neutral" | "primary" | "success" | "warning" | "danger" | "info";
+  size?: "sm" | "md";
+  dot?: boolean;
+}
+
+const { variant = "neutral", size = "md", dot = false } = Astro.props;
+---
+
+<span class:list={["ds-badge", `ds-badge--${variant}`, `ds-badge--${size}`]}>
+  {dot && <span class="ds-badge__dot" aria-hidden="true"></span>}
+  <slot />
+</span>
+
+<style>
+  .ds-badge {
+    --_bg: var(--ds-color-surface-sunken);
+    --_fg: var(--ds-color-text-secondary);
+    --_dot: var(--ds-color-text-muted);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-1);
+    font-weight: var(--ds-weight-medium);
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: var(--ds-radius-full);
+    background: var(--_bg);
+    color: var(--_fg);
+    border: 1px solid transparent;
+  }
+
+  .ds-badge__dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--_dot);
+    flex-shrink: 0;
+  }
+
+  .ds-badge--sm {
+    font-size: var(--ds-text-2xs);
+    padding: 0.3rem 0.55rem;
+  }
+  .ds-badge--md {
+    font-size: var(--ds-text-xs);
+    padding: 0.35rem 0.65rem;
+  }
+
+  .ds-badge--primary {
+    --_bg: var(--ds-color-primary-soft);
+    --_fg: var(--ds-color-primary);
+    --_dot: var(--ds-color-primary);
+  }
+  .ds-badge--success {
+    --_bg: var(--ds-color-success-soft);
+    --_fg: var(--ds-color-success);
+    --_dot: var(--ds-color-success);
+  }
+  .ds-badge--warning {
+    --_bg: var(--ds-color-warning-soft);
+    --_fg: var(--ds-color-warning);
+    --_dot: var(--ds-color-warning);
+  }
+  .ds-badge--danger {
+    --_bg: var(--ds-color-danger-soft);
+    --_fg: var(--ds-color-danger);
+    --_dot: var(--ds-color-danger);
+  }
+  .ds-badge--info {
+    --_bg: var(--ds-color-info-soft);
+    --_fg: var(--ds-color-info);
+    --_dot: var(--ds-color-info);
+  }
+</style>

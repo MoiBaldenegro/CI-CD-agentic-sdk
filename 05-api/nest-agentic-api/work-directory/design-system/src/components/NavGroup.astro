@@ -1,0 +1,95 @@
+---
+interface Props {
+  items: { label: string; href: string; badge?: string }[];
+  title: string;
+  current: string;
+}
+
+const { items, title, current } = Astro.props;
+---
+
+<div class="ds-nav-group">
+  <p class="ds-nav-group__title">{title}</p>
+  <ul class="ds-nav-group__list">
+    {
+      items.map((item) => {
+        const isActive =
+          current === item.href ||
+          (item.href !== "/" && current.startsWith(item.href));
+        return (
+          <li>
+            <a
+              href={item.href}
+              class:list={["ds-nav-link", isActive && "is-active"]}
+              aria-current={isActive ? "page" : undefined}
+            >
+              <span>{item.label}</span>
+              {item.badge && <span class="ds-nav-link__badge">{item.badge}</span>}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  .ds-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-block: var(--ds-space-3);
+  }
+
+  .ds-nav-group__title {
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-color-text-muted);
+    padding-inline: var(--ds-space-3);
+  }
+
+  .ds-nav-group__list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .ds-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+    padding: 0.5rem var(--ds-space-3);
+    border-radius: var(--ds-radius-md);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    text-decoration: none;
+    transition: background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .ds-nav-link:hover {
+    background: var(--ds-color-surface-sunken);
+    color: var(--ds-color-text);
+    text-decoration: none;
+  }
+
+  .ds-nav-link.is-active {
+    background: var(--ds-color-primary-soft);
+    color: var(--ds-color-primary);
+    font-weight: var(--ds-weight-medium);
+  }
+
+  .ds-nav-link__badge {
+    font-size: var(--ds-text-2xs);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-surface-sunken);
+    color: var(--ds-color-text-muted);
+    font-weight: var(--ds-weight-medium);
+  }
+</style>

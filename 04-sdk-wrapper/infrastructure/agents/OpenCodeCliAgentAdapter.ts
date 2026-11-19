@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
+import { delimiter, join } from "node:path";
+import { homedir, tmpdir } from "node:os";
 import type {
   AgentGateway,
   AgentPrompt,
@@ -30,6 +30,14 @@ export class OpenCodeCliAgentAdapter implements AgentGateway {
 
     if (model !== undefined) {
       args.push("--model", model);
+    }
+
+    if (debugEnabled()) {
+      args.push("--print-logs", "--log-level", "DEBUG");
+    }
+
+    if (thinkingEnabled()) {
+      args.push("--thinking");
     }
 
     args.push(prompt.text);
@@ -99,20 +107,32 @@ function runOpenCode(
     env: NodeJS.ProcessEnv,
   ): Promise<{ readonly stdout: string; readonly stderr: string }> {
     return new Promise((resolve, reject) => {
-      const child = spawn(executable, args, {
-        cwd: directory,
-        env,
-        windowsHide: true,
-        stdio: ["pipe", "pipe", "pipe"],
-      });
+      const useShell = needsShell(executable);
+      const child = spawn(
+        executable,
+        useShell ? args.map(quoteForShell) : args,
+        {
+          cwd: directory,
+          env,
+          windowsHide: true,
+          shell: useShell,
+          stdio: ["pipe", "pipe", "pipe"],
+        },
+      );
       let stdout = "";
       let stderr = "";
 
       child.stdout.on("data", (chunk: Buffer) => {
         stdout += chunk.toString();
+        if (debugEnabled()) {
+          process.stderr.write(chunk);
+        }
       });
       child.stderr.on("data", (chunk: Buffer) => {
         stderr += chunk.toString();
+        if (debugEnabled()) {
+          process.stderr.write(chunk);
+        }
       });
       child.on("error", reject);
       child.on("close", (code) => {
@@ -141,20 +161,80 @@ function createWorkspaceSystemPrompt(directory: string): string {
 }
 
 function resolveOpenCodeExecutable(): string {
+  const override = process.env.OPENCODE_BIN?.trim();
+  if (override !== undefined && override.length > 0) {
+    return override;
+  }
+
   if (process.platform !== "win32") {
     return "opencode";
   }
 
-  const executable = join(
-    process.env.APPDATA ?? "",
-    "npm",
-    "node_modules",
-    "opencode-ai",
-    "bin",
-    "opencode.exe",
-  );
+  const candidates = [
+    join(
+      process.env.APPDATA ?? "",
+      "npm",
+      "node_modules",
+      "opencode-ai",
+      "bin",
+      "opencode.exe",
+    ),
+    join(homedir(), ".opencode", "bin", "opencode.exe"),
+    join(process.env.LOCALAPPDATA ?? "", "opencode", "bin", "opencode.exe"),
+  ];
 
-  return existsSync(executable) ? executable : "opencode.cmd";
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  const onPath = findOnPath(["opencode.exe", "opencode.cmd", "opencode.bat"]);
+  return onPath ?? "opencode.cmd";
+}
+
+function findOnPath(fileNames: string[]): string | undefined {
+  const directories = (process.env.PATH ?? "").split(delimiter);
+
+  for (const directory of directories) {
+    if (directory.length === 0) {
+      continue;
+    }
+
+    for (const fileName of fileNames) {
+      const candidate = join(directory, fileName);
+      if (existsSync(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function debugEnabled(): boolean {
+  return process.env.OPENCODE_DEBUG === "1";
+}
+
+function thinkingEnabled(): boolean {
+  const value = process.env.OPENCODE_THINKING?.trim().toLowerCase();
+  return value === "1" || value === "true";
+}
+
+function needsShell(executable: string): boolean {
+  return process.platform === "win32" && /\.(cmd|bat)$/i.test(executable);
+}
+
+function quoteForShell(arg: string): string {
+  if (arg.length === 0) {
+    return '""';
+  }
+
+  if (!/[\s"&|<>^]/.test(arg)) {
+    return arg;
+  }
+
+  return `"${arg.replace(/"/g, '""')}"`;
 }
 
 function extractCliResponse(output: string): string {

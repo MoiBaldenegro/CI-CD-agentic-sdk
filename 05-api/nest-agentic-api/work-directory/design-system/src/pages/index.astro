@@ -1,0 +1,632 @@
+---
+import Base from "../layouts/Base.astro";
+import Button from "../components/Button.astro";
+import Badge from "../components/Badge.astro";
+import Card from "../components/Card.astro";
+import Avatar from "../components/Avatar.astro";
+
+const principles = [
+  {
+    title: "Consistencia con intención",
+    text: "Un mismo lenguaje visual para toda la plataforma. Si algo se repite, vive aquí como componente o token, no como excepción.",
+    icon: "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",
+  },
+  {
+    title: "Accesible por defecto",
+    text: "Contraste AA, foco visible y navegación por teclado incluidos en cada componente. La accesibilidad no es una capa opcional.",
+    icon: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-13v5m0 4h.01",
+  },
+  {
+    title: "Tokens antes que valores",
+    text: "Color, espacio y tipografía se consumen desde variables semánticas. Cambiar la marca no debería implicar tocar componentes.",
+    icon: "M4 7h16M4 12h10M4 17h7",
+  },
+];
+
+const quickLinks = [
+  {
+    href: "/fundamentos/colores",
+    eyebrow: "Fundamentos",
+    title: "Color y contraste",
+    text: "Paleta primitiva, tokens semánticos y pares accesibles para texto, superficies y estados.",
+  },
+  {
+    href: "/componentes/botones",
+    eyebrow: "Componentes",
+    title: "Botones y acciones",
+    text: "Cinco variantes, tres tamaños y reglas claras de jerarquía para acciones primarias.",
+  },
+  {
+    href: "/patrones",
+    eyebrow: "Patrones",
+    title: "Layouts de producto",
+    text: "Composición de dashboards, formularios y estados vacíos sobre la retícula de 4 px.",
+  },
+];
+---
+
+<Base title="Visión general">
+  <section class="hero">
+    <div class="hero__copy">
+      <div class="hero__badges">
+        <Badge variant="primary" dot>Design system v1.0</Badge>
+        <Badge variant="success">WCAG AA</Badge>
+        <Badge>Base de tokens</Badge>
+      </div>
+      <h1 class="hero__title">
+        Un lenguaje visual<br />
+        <span class="hero__title-accent">para la Plataforma Aurora</span>
+      </h1>
+      <p class="hero__lead">
+        Aurora DS reúne los fundamentos, componentes y patrones que usamos para construir nuestros
+        productos. Documentado, tokenizado y listo para llevar a código.
+      </p>
+      <div class="hero__actions">
+        <Button href="/componentes/botones" size="lg">Explorar componentes</Button>
+        <Button href="/fundamentos/colores" variant="secondary" size="lg">Ver fundamentos</Button>
+      </div>
+      <dl class="hero__stats">
+        <div>
+          <dt>Tokens</dt>
+          <dd>140+</dd>
+        </div>
+        <div>
+          <dt>Componentes</dt>
+          <dd>12</dd>
+        </div>
+        <div>
+          <dt>Temas</dt>
+          <dd>2</dd>
+        </div>
+        <div>
+          <dt>Cobertura AA</dt>
+          <dd>100%</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="hero__preview" aria-label="Vista previa del producto">
+      <div class="preview">
+        <div class="preview__top">
+          <div class="preview__brand">
+            <span class="preview__logo" aria-hidden="true"></span>
+            <div class="preview__brand-text">
+              <strong>Aurora Analytics</strong>
+              <span>Panel de ingresos</span>
+            </div>
+          </div>
+          <div class="preview__user">
+            <Avatar name="Lucía Ortega" size="sm" status="online" />
+          </div>
+        </div>
+        <div class="preview__kpis">
+          <div class="preview__kpi">
+            <span class="preview__kpi-label">MRR</span>
+            <strong class="preview__kpi-value">€48.2k</strong>
+            <span class="preview__kpi-delta">▲ 12,4%</span>
+          </div>
+          <div class="preview__kpi">
+            <span class="preview__kpi-label">Churn</span>
+            <strong class="preview__kpi-value">2,1%</strong>
+            <span class="preview__kpi-delta preview__kpi-delta--down">▼ 0,4%</span>
+          </div>
+          <div class="preview__kpi">
+            <span class="preview__kpi-label">Activos</span>
+            <strong class="preview__kpi-value">3.204</strong>
+            <span class="preview__kpi-delta">▲ 8,1%</span>
+          </div>
+        </div>
+        <div class="preview__chart" aria-hidden="true">
+          <div class="preview__chart-head">
+            <span>Ingresos por mes</span>
+            <span class="preview__chart-legend">2026</span>
+          </div>
+          <div class="preview__bars">
+            {[46, 58, 52, 70, 64, 82, 76, 94, 88, 100, 91, 96].map((h) => (
+              <span style={`--h:${h}%`}></span>
+            ))}
+          </div>
+        </div>
+        <div class="preview__row">
+          <span class="preview__pill">
+            <span class="preview__pill-dot" aria-hidden="true"></span>
+            En vivo
+          </span>
+          <span class="preview__row-text">Actualizado hace 2 min</span>
+        </div>
+      </div>
+      <div class="preview__glow" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <p class="ds-eyebrow">Principios</p>
+      <h2>Tres reglas que guían cada decisión</h2>
+      <p class="ds-muted">
+        Los principios resuelven empates: cuando dos opciones parecen válidas, gana la que mejor
+        respeta estas ideas.
+      </p>
+    </div>
+    <div class="ds-grid ds-grid--3">
+      {
+        principles.map((principle, index) => (
+          <article class="principle">
+            <div class="principle__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d={principle.icon} />
+              </svg>
+            </div>
+            <span class="principle__index">0{index + 1}</span>
+            <h3>{principle.title}</h3>
+            <p>{principle.text}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head">
+      <p class="ds-eyebrow">Empieza por aquí</p>
+      <h2>Una base, tres recorridos</h2>
+    </div>
+    <div class="ds-grid ds-grid--3">
+      {
+        quickLinks.map((link) => (
+          <a class="quick-link" href={link.href}>
+            <Card eyebrow={link.eyebrow} title={link.title} interactive>
+              <p>{link.text}</p>
+              <span class="quick-link__cta">
+                Abrir sección
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </Card>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="callout">
+      <div class="callout__copy">
+        <p class="ds-eyebrow">Integración</p>
+        <h2>Del token al componente en una línea</h2>
+        <p class="ds-muted">
+          Todo el sistema se define con variables CSS. Importa el archivo de tokens y compón con
+          las clases de utilidad, sin dependencias de runtime.
+        </p>
+        <div class="callout__actions">
+          <Button href="/recursos" variant="secondary">Descargar tokens</Button>
+          <Button href="/fundamentos/espaciado" variant="ghost">Ver retícula →</Button>
+        </div>
+      </div>
+      <div class="callout__code">
+        <div class="callout__code-head">
+          <span class="callout__code-dot" aria-hidden="true"></span>
+          <span>styles/tokens.css</span>
+        </div>
+        <pre><code><span class="tok-c">:root</span> &#123;
+  <span class="tok-p">--ds-color-primary</span>: #6a3df0;
+  <span class="tok-p">--ds-space-4</span>: 1rem;
+  <span class="tok-p">--ds-radius-md</span>: 0.625rem;
+  <span class="tok-p">--ds-text-base</span>: 1rem;
+&#125;</code></pre>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--ds-space-12);
+    align-items: center;
+    padding-block: var(--ds-space-8) var(--ds-space-16);
+  }
+
+  .hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .hero__title {
+    font-size: clamp(2.5rem, 4.4vw, 3.9rem);
+    font-weight: var(--ds-weight-bold);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .hero__title-accent {
+    background: var(--ds-gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero__lead {
+    max-width: 34rem;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-color-text-secondary);
+    margin-bottom: var(--ds-space-7, var(--ds-space-8));
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-10);
+  }
+
+  .hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-8);
+    margin: 0;
+  }
+  .hero__stats div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hero__stats dt {
+    order: 2;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+    letter-spacing: 0.02em;
+  }
+  .hero__stats dd {
+    margin: 0;
+    font-size: var(--ds-text-2xl);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Preview ---------- */
+  .hero__preview {
+    position: relative;
+  }
+
+  .preview__glow {
+    position: absolute;
+    inset: 8% -6% -8% 10%;
+    background: var(--ds-gradient-brand);
+    filter: blur(56px);
+    opacity: 0.18;
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  .preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-5);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-xl);
+    background: color-mix(in srgb, var(--ds-color-surface) 92%, transparent);
+    box-shadow: var(--ds-shadow-lg);
+    backdrop-filter: blur(8px);
+    transform: perspective(1200px) rotateY(-4deg) rotateX(1.5deg);
+  }
+
+  .preview__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .preview__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .preview__logo {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: var(--ds-radius-sm);
+    background: var(--ds-gradient-brand);
+  }
+  .preview__brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .preview__brand-text strong {
+    font-size: var(--ds-text-xs);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .preview__brand-text span {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .preview__kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--ds-space-2);
+  }
+  .preview__kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: var(--ds-space-3);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-surface);
+  }
+  .preview__kpi-label {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+  .preview__kpi-value {
+    font-size: var(--ds-text-base);
+    font-weight: var(--ds-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .preview__kpi-delta {
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-success);
+  }
+  .preview__kpi-delta--down {
+    color: var(--ds-color-success);
+  }
+
+  .preview__chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .preview__chart-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-secondary);
+  }
+  .preview__chart-legend {
+    color: var(--ds-color-text-muted);
+  }
+  .preview__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 6.5rem;
+  }
+  .preview__bars span {
+    flex: 1;
+    height: var(--h);
+    border-radius: 3px 3px 2px 2px;
+    background: linear-gradient(180deg, var(--ds-violet-500), var(--ds-violet-400));
+    opacity: 0.9;
+  }
+  .preview__bars span:nth-child(4n + 2) {
+    background: linear-gradient(180deg, var(--ds-cyan-500), var(--ds-cyan-400));
+    opacity: 0.75;
+  }
+
+  .preview__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .preview__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+    padding: 0.25rem 0.55rem;
+    border-radius: var(--ds-radius-full);
+  }
+  .preview__pill-dot {
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-color-success) 25%, transparent);
+  }
+  .preview__row-text {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  /* ---------- Secciones ---------- */
+  .section {
+    padding-block: var(--ds-space-10);
+    border-top: 1px solid var(--ds-color-border);
+  }
+
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 40rem;
+    margin-bottom: var(--ds-space-8);
+  }
+  .section__head h2 {
+    font-size: var(--ds-text-3xl);
+    letter-spacing: -0.03em;
+  }
+  .section__head p.ds-muted {
+    font-size: var(--ds-text-base);
+  }
+
+  .principle {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-6);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .principle__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-primary-soft);
+    color: var(--ds-color-primary);
+  }
+  .principle__index {
+    position: absolute;
+    top: var(--ds-space-5);
+    right: var(--ds-space-6);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+  .principle h3 {
+    font-size: var(--ds-text-lg);
+  }
+  .principle p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-normal);
+  }
+
+  .quick-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+  }
+  .quick-link:hover {
+    text-decoration: none;
+  }
+  .quick-link :global(.ds-card) {
+    width: 100%;
+  }
+  .quick-link__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-primary);
+  }
+  .quick-link:hover .quick-link__cta svg {
+    transform: translateX(3px);
+  }
+  .quick-link__cta svg {
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  /* ---------- Callout ---------- */
+  .callout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: var(--ds-space-8);
+    align-items: center;
+    padding: var(--ds-space-8);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-xl);
+    background:
+      radial-gradient(ellipse 70% 120% at 100% 0%, var(--ds-color-primary-soft), transparent 65%),
+      var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .callout__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .callout__copy h2 {
+    font-size: var(--ds-text-2xl);
+    letter-spacing: -0.03em;
+  }
+  .callout__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    margin-top: var(--ds-space-2);
+  }
+
+  .callout__code {
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface-sunken);
+    overflow: hidden;
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .callout__code-head {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .callout__code-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--ds-color-primary);
+  }
+  .callout__code pre {
+    margin: 0;
+    padding: var(--ds-space-4) var(--ds-space-5);
+    overflow-x: auto;
+    font-size: var(--ds-text-sm);
+    line-height: 1.7;
+    color: var(--ds-color-text-secondary);
+  }
+  .callout__code .tok-c {
+    color: var(--ds-color-primary);
+  }
+  .callout__code .tok-p {
+    color: var(--ds-color-accent);
+  }
+
+  @media (max-width: 1100px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--ds-space-10);
+    }
+    .preview {
+      transform: none;
+    }
+    .callout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero__stats {
+      gap: var(--ds-space-6);
+    }
+    .preview__kpis {
+      grid-template-columns: 1fr;
+    }
+    .preview__bars {
+      height: 4.5rem;
+    }
+    .section__head h2 {
+      font-size: var(--ds-text-2xl);
+    }
+  }
+</style>

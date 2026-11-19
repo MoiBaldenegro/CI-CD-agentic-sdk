@@ -1,0 +1,59 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "lib/factory": [
+        "libs/factory/src"
+      ],
+      "lib/factory/*": [
+        "libs/factory/src/*"
+      ],
+      "lib/persistence": [
+        "libs/persistence"
+      ],
+      "lib/persistence/*": [
+        "libs/persistence/*"
+      ],
+      "lib/queue": [
+        "libs/queue"
+      ],
+      "lib/queue/*": [
+        "libs/queue/*"
+      ],
+      "@app/shared": [
+        "libs/shared/src"
+      ],
+      "@app/shared/*": [
+        "libs/shared/src/*"
+      ],
+      "@app/shared-kernel": [
+        "libs/shared-kernel"
+      ],
+      "@app/shared-kernel/*": [
+        "libs/shared-kernel/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "libs/persistence/mongodb",
+    "src/modules/bounded/factory/infrastructure/agents/OpenCodeAgentAdapter.ts"
+  ]
+}

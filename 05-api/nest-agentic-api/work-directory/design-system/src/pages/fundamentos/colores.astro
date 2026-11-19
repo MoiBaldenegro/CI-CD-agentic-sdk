@@ -1,0 +1,543 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Badge from "../../components/Badge.astro";
+
+const violet = [
+  { step: 50, hex: "#F4F2FF" },
+  { step: 100, hex: "#EBE7FF" },
+  { step: 200, hex: "#D9D2FF" },
+  { step: 300, hex: "#BFB2FF" },
+  { step: 400, hex: "#9F88FF" },
+  { step: 500, hex: "#7F5CFF" },
+  { step: 600, hex: "#6A3DF0" },
+  { step: 700, hex: "#572BD1" },
+  { step: 800, hex: "#4825A9" },
+  { step: 900, hex: "#3B2187" },
+  { step: 950, hex: "#241350" },
+];
+
+const cyan = [
+  { step: 50, hex: "#ECFEFF", dark: true },
+  { step: 100, hex: "#CFFAFE", dark: true },
+  { step: 200, hex: "#A5F3FC", dark: true },
+  { step: 300, hex: "#67E8F9", dark: true },
+  { step: 400, hex: "#22D3EE", dark: true },
+  { step: 500, hex: "#06B6D4", dark: true },
+  { step: 600, hex: "#0891B2", dark: true },
+  { step: 700, hex: "#0E7490", dark: true },
+];
+
+const gray = [
+  { step: 0, hex: "#FFFFFF" },
+  { step: 50, hex: "#F8F8FB" },
+  { step: 100, hex: "#F1F1F6" },
+  { step: 200, hex: "#E5E5EE" },
+  { step: 300, hex: "#D2D2E0" },
+  { step: 400, hex: "#A5A5B8" },
+  { step: 500, hex: "#7C7C93" },
+  { step: 600, hex: "#5B5B72" },
+  { step: 700, hex: "#444458" },
+  { step: 800, hex: "#2C2C3D" },
+  { step: 900, hex: "#1B1B28" },
+  { step: 950, hex: "#101018" },
+];
+
+const status = [
+  { name: "Success", token: "success", hex: "#047857", soft: "#ECFDF5" },
+  { name: "Warning", token: "warning", hex: "#B45309", soft: "#FFFBEB" },
+  { name: "Danger", token: "danger", hex: "#B91C1C", soft: "#FEF2F2" },
+  { name: "Info", token: "info", hex: "#2563EB", soft: "#EFF6FF" },
+];
+
+const semantic = [
+  { token: "--ds-color-canvas", use: "Fondo de la aplicación", light: "#F8F8FB", dark: "#0C0C14" },
+  { token: "--ds-color-surface", use: "Tarjetas, paneles, inputs", light: "#FFFFFF", dark: "#14141F" },
+  { token: "--ds-color-surface-sunken", use: "Zonas hundidas, código", light: "#F1F1F6", dark: "#0F0F18" },
+  { token: "--ds-color-text", use: "Texto principal", light: "#1B1B28", dark: "#F2F2F7" },
+  { token: "--ds-color-text-secondary", use: "Texto de apoyo", light: "#5B5B72", dark: "#B4B4C6" },
+  { token: "--ds-color-text-muted", use: "Metadatos y placeholders", light: "#7C7C93", dark: "#8A8AA0" },
+  { token: "--ds-color-border", use: "Bordes por defecto", light: "#E5E5EE", dark: "#262636" },
+  { token: "--ds-color-primary", use: "Acción principal, enlaces", light: "#6A3DF0", dark: "#9F88FF" },
+  { token: "--ds-color-primary-soft", use: "Fondos de énfasis suave", light: "#EBE7FF", dark: "rgba(127,92,255,.18)" },
+];
+
+const contrasts = [
+  { pair: "Texto principal / superficie", fg: "#1B1B28", bg: "#FFFFFF", ratio: "16,9:1", level: "AAA" },
+  { pair: "Texto secundario / superficie", fg: "#5B5B72", bg: "#FFFFFF", ratio: "6,6:1", level: "AA" },
+  { pair: "Blanco / violeta 600", fg: "#FFFFFF", bg: "#6A3DF0", ratio: "5,9:1", level: "AA" },
+  { pair: "Violeta 700 / violeta 100", fg: "#572BD1", bg: "#EBE7FF", ratio: "6,5:1", level: "AA" },
+  { pair: "Rojo 700 / danger soft", fg: "#B91C1C", bg: "#FEF2F2", ratio: "5,9:1", level: "AA" },
+];
+---
+
+<Base title="Colores">
+  <PageHeader
+    eyebrow="Fundamentos"
+    title="Color y contraste"
+    lead="Una paleta construida en dos capas: primitivos con valores fijos y tokens semánticos que se adaptan al tema claro y oscuro. Los componentes solo consumen la capa semántica."
+    meta={["11 pasos de violeta", "12 neutros", "4 estados", "AA mínimo"]}
+  />
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Marca · Violeta</h2>
+      <p class="ds-muted">
+        Color principal de la Plataforma Aurora. El paso <span class="ds-code">600</span> es la
+        acción por defecto en tema claro; <span class="ds-code">400</span> en oscuro.
+      </p>
+    </div>
+    <div class="swatches" id="violetScale">
+      {
+        violet.map((color) => (
+          <button class="swatch" type="button" data-hex={color.hex} style={`--swatch:${color.hex}`}>
+            <span class:list={["swatch__step", color.step >= 300 && "swatch__step--dark"]}>{color.step}</span>
+            <span class:list={["swatch__copy", color.step >= 300 && "swatch__copy--dark"]} data-copy-hint>
+              {color.hex}
+            </span>
+          </button>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Acento · Cian</h2>
+      <p class="ds-muted">
+        Se usa con moderación: datos en vivo, series secundarias de gráficos y el final del
+        gradiente de marca. Nunca como color de texto pequeño sobre superficie clara.
+      </p>
+    </div>
+    <div class="swatches swatches--accent">
+      {
+        cyan.map((color) => (
+          <button class="swatch" type="button" data-hex={color.hex} style={`--swatch:${color.hex}`}>
+            <span class="swatch__step swatch__step--dark">{color.step}</span>
+            <span class="swatch__copy swatch__copy--dark" data-copy-hint>{color.hex}</span>
+          </button>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Neutros</h2>
+      <p class="ds-muted">
+        Base de superficies, bordes y jerarquía tipográfica. Los pasos 50–300 son superficies en
+        tema claro; en oscuro se invierten por tokens semánticos.
+      </p>
+    </div>
+    <div class="swatches swatches--neutral">
+      {
+        gray.map((color) => (
+          <button class="swatch" type="button" data-hex={color.hex} style={`--swatch:${color.hex}`}>
+            <span class:list={["swatch__step", color.step >= 300 && "swatch__step--dark"]}>{color.step}</span>
+            <span class:list={["swatch__copy", color.step >= 300 && "swatch__copy--dark"]} data-copy-hint>{color.hex}</span>
+          </button>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Colores de estado</h2>
+      <p class="ds-muted">
+        Cada estado tiene un tono sólido (iconos, texto) y un tono suave (fondo del mensaje). No se
+        mezclan solid y soft entre estados distintos.
+      </p>
+    </div>
+    <div class="ds-grid ds-grid--4">
+      {
+        status.map((item) => (
+          <div class="status-card">
+            <div class="status-card__swatches">
+              <span style={`background:${item.hex}`}></span>
+              <span style={`background:${item.soft}`}></span>
+            </div>
+            <div class="status-card__info">
+              <strong>{item.name}</strong>
+              <code>{`--ds-color-${item.token}`}</code>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Tokens semánticos</h2>
+      <p class="ds-muted">
+        La única capa que los componentes deberían referenciar. Cambiar un semántico actualiza todo
+        el producto, en ambos temas.
+      </p>
+    </div>
+    <div class="table-wrap">
+      <table class="ds-table">
+        <thead>
+          <tr><th>Token</th><th>Uso</th><th>Claro</th><th>Oscuro</th></tr>
+        </thead>
+        <tbody>
+          {
+            semantic.map((row) => (
+              <tr>
+                <td><code>{row.token}</code></td>
+                <td class="ds-muted">{row.use}</td>
+                <td>
+                  <span class="chip"><span class="chip__dot" style={`background:${row.light}`}></span>{row.light}</span>
+                </td>
+                <td>
+                  <span class="chip"><span class="chip__dot" style={`background:${row.dark}`}></span>{row.dark}</span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Pares accesibles</h2>
+      <p class="ds-muted">
+        Combinaciones validadas con contraste mínimo AA (4,5:1 para texto normal). Los ratios son
+        informativos y deben revalidarse si cambia la paleta.
+      </p>
+    </div>
+    <div class="contrast-grid">
+      {
+        contrasts.map((item) => (
+          <div class="contrast" style={`--fg:${item.fg};--bg:${item.bg}`}>
+            <div class="contrast__preview">
+              <span class="contrast__aa">Aa</span>
+              <span class="contrast__sample">El veloz murciélago</span>
+            </div>
+            <div class="contrast__meta">
+              <span class="contrast__pair">{item.pair}</span>
+              <span class="contrast__right">
+                <span class="ds-muted">{item.ratio}</span>
+                <Badge variant={item.level === "AAA" ? "success" : "primary"} size="sm">{item.level}</Badge>
+              </span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block__head">
+      <h2>Uso correcto</h2>
+    </div>
+    <div class="ds-grid ds-grid--2">
+      <div class="guideline guideline--do">
+        <p class="guideline__label">Hazlo</p>
+        <ul>
+          <li>Usa <code>--ds-color-primary</code> para la acción principal de cada vista.</li>
+          <li>Reserva el acento cian para datos y elementos en vivo.</li>
+          <li>Compón fondos de estado con su variante <em>soft</em>.</li>
+        </ul>
+      </div>
+      <div class="guideline guideline--dont">
+        <p class="guideline__label">Evítalo</p>
+        <ul>
+          <li>Escribir valores hex dentro de componentes.</li>
+          <li>Usar cian como texto sobre superficies claras.</li>
+          <li>Combinar más de un color de estado en un mismo mensaje.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-hex]").forEach((swatch) => {
+    swatch.addEventListener("click", async () => {
+      const hex = swatch.dataset.hex || "";
+      const hint = swatch.querySelector<HTMLElement>("[data-copy-hint]");
+      try {
+        await navigator.clipboard.writeText(hex);
+      } catch (e) {
+        return;
+      }
+      if (hint) {
+        const original = hex;
+        hint.textContent = "Copiado";
+        swatch.classList.add("is-copied");
+        setTimeout(() => {
+          hint.textContent = original;
+          swatch.classList.remove("is-copied");
+        }, 1200);
+      }
+    });
+  });
+</script>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+
+  .block__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    max-width: 42rem;
+    margin-bottom: var(--ds-space-6);
+  }
+  .block__head h2 {
+    font-size: var(--ds-text-2xl);
+  }
+  .block__head p {
+    font-size: var(--ds-text-sm);
+    line-height: var(--ds-leading-normal);
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .swatches--accent {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .swatches--neutral {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .swatch {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    aspect-ratio: 0.82;
+    padding: var(--ds-space-2);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--swatch);
+    cursor: pointer;
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .swatch:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-md);
+  }
+  .swatch.is-copied {
+    outline: 2px solid var(--ds-color-primary);
+    outline-offset: 1px;
+  }
+  .swatch__step {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    color: #1b1b28;
+    opacity: 0.75;
+  }
+  .swatch__copy {
+    font-family: var(--ds-font-mono);
+    font-size: 0.6rem;
+    color: #1b1b28;
+    opacity: 0.6;
+  }
+  .swatch__step--dark,
+  .swatch__copy--dark {
+    color: #ffffff;
+    opacity: 0.85;
+  }
+
+  .status-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .status-card__swatches {
+    display: flex;
+    gap: var(--ds-space-2);
+  }
+  .status-card__swatches span {
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-color-border);
+  }
+  .status-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .status-card__info strong {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .status-card__info code {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+  }
+
+  .ds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    min-width: 640px;
+    background: var(--ds-color-surface);
+  }
+  .ds-table th {
+    text-align: left;
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-color-text-muted);
+    font-weight: var(--ds-weight-semibold);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface-muted);
+  }
+  .ds-table td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-color-border);
+    vertical-align: middle;
+  }
+  .ds-table tr:last-child td {
+    border-bottom: 0;
+  }
+  .ds-table code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-primary);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-secondary);
+  }
+  .chip__dot {
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: var(--ds-radius-xs);
+    border: 1px solid var(--ds-color-border-strong);
+    flex-shrink: 0;
+  }
+
+  .contrast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--ds-space-4);
+  }
+  .contrast {
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    overflow: hidden;
+    background: var(--ds-color-surface);
+  }
+  .contrast__preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+    padding: var(--ds-space-5);
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .contrast__aa {
+    font-size: var(--ds-text-2xl);
+    font-weight: var(--ds-weight-bold);
+    line-height: 1;
+  }
+  .contrast__sample {
+    font-size: var(--ds-text-sm);
+  }
+  .contrast__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-size: var(--ds-text-xs);
+  }
+  .contrast__pair {
+    color: var(--ds-color-text-secondary);
+  }
+  .contrast__right {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+
+  .guideline {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    font-size: var(--ds-text-sm);
+  }
+  .guideline__label {
+    display: inline-block;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--ds-radius-full);
+  }
+  .guideline--do .guideline__label {
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+  }
+  .guideline--dont .guideline__label {
+    color: var(--ds-color-danger);
+    background: var(--ds-color-danger-soft);
+  }
+  .guideline ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-left: var(--ds-space-5);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+  .guideline code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.85em;
+    color: var(--ds-color-text);
+  }
+
+  @media (max-width: 900px) {
+    .swatches {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .swatches--neutral {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .swatches,
+    .swatches--accent,
+    .swatches--neutral {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

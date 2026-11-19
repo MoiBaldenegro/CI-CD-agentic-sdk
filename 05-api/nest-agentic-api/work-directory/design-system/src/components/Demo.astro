@@ -1,0 +1,95 @@
+---
+interface Props {
+  code: string;
+  stack?: boolean;
+  label?: string;
+}
+
+const { code, stack = false, label } = Astro.props;
+---
+
+<section class="ds-demo">
+  {
+    label && (
+      <div class="ds-demo__label">
+        <span class="ds-demo__dot" aria-hidden="true"></span>
+        {label}
+      </div>
+    )
+  }
+  <div class:list={["ds-demo__canvas", stack && "ds-demo__canvas--stack"]}>
+    <slot />
+  </div>
+  <div class="ds-demo__code">
+    <button class="ds-copy" type="button" data-copy-code aria-label="Copiar código">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="9" y="9" width="12" height="12" rx="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span data-copy-label>Copiar</span>
+    </button>
+    <pre><code>{code.trim()}</code></pre>
+  </div>
+</section>
+
+<style>
+  .ds-demo {
+    position: relative;
+  }
+
+  .ds-demo__label {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-3) var(--ds-space-6) 0;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-color-text-muted);
+  }
+
+  .ds-demo__dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-primary);
+  }
+
+  .ds-copy {
+    position: absolute;
+    top: var(--ds-space-3);
+    right: var(--ds-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-family: var(--ds-font-sans);
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-medium);
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--ds-radius-sm);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-text-muted);
+    opacity: 0;
+    transition: opacity var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+
+  .ds-demo:hover .ds-copy,
+  .ds-copy:focus-visible {
+    opacity: 1;
+  }
+
+  .ds-copy:hover {
+    color: var(--ds-color-text);
+    border-color: var(--ds-color-border-strong);
+  }
+
+  .ds-copy.is-copied {
+    color: var(--ds-color-success);
+    border-color: var(--ds-color-success);
+    opacity: 1;
+  }
+</style>

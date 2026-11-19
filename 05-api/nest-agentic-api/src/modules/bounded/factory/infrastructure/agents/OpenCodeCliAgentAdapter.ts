@@ -1,0 +1,276 @@
+import { Logger } from '@nestjs/common';
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { delimiter, join } from 'node:path';
+import { homedir, tmpdir } from 'node:os';
+import {
+  TASK_AGENT_STATUS_INSTRUCTIONS,
+  type AgentGateway,
+  type AgentPrimitives,
+  type AgentPrompt,
+  type AgentResponse,
+} from 'lib/factory';
+
+export interface OpenCodeCliAgentAdapterOptions {
+  readonly directory: string;
+  readonly model?: string;
+  readonly systemPrompt?: string;
+}
+
+export class OpenCodeCliAgentAdapter implements AgentGateway {
+  private readonly logger = new Logger(OpenCodeCliAgentAdapter.name);
+
+  constructor(private readonly options: OpenCodeCliAgentAdapterOptions) {}
+
+  async sendPrompt(
+    agent: AgentPrimitives,
+    prompt: AgentPrompt,
+  ): Promise<AgentResponse> {
+    if (agent.provider !== 'opencode') {
+      throw new Error(`Unsupported agent provider: ${agent.provider}`);
+    }
+
+    const executable = resolveOpenCodeExecutable();
+    const args = ['run'];
+    const model = agent.model ?? this.options.model;
+
+    if (model !== undefined) {
+      args.push('--model', model);
+    }
+
+    if (debugEnabled()) {
+      args.push('--print-logs', '--log-level', 'DEBUG');
+    }
+
+    if (thinkingEnabled()) {
+      args.push('--thinking');
+    }
+
+    args.push(prompt.text);
+
+    this.logger.log(
+      `Enviando prompt a OpenCode CLI (agent=${agent.provider}:${agent.agentId}, model=${model ?? 'default'}, cwd=${this.options.directory}, chars=${prompt.text.length})`,
+    );
+    this.logger.log(`Ejecutando: ${executable} ${args.join(' ')}`);
+
+    try {
+      const result = await runOpenCode(
+        executable,
+        args,
+        this.options.directory,
+        withStatusProtocol(
+          this.options.systemPrompt ??
+            createWorkspaceSystemPrompt(this.options.directory),
+        ),
+      );
+      const text = extractCliResponse(result.stdout);
+
+      if (text.length === 0) {
+        throw new Error(
+          `OpenCode CLI no devolvió texto. Salida: ${result.stderr.trim() || '(vacía)'}`,
+        );
+      }
+
+      if (process.env.OPENCODE_DEBUG === '1') {
+        console.error('[OpenCode CLI debug] stdout:');
+        console.error(result.stdout);
+        console.error('[OpenCode CLI debug] stderr:');
+        console.error(result.stderr);
+      }
+
+      this.logger.log(`OpenCode CLI respondió ${text.length} caracteres`);
+
+      return {
+        sessionId: null,
+        text,
+      };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`OpenCode CLI falló: ${message}`);
+      throw new Error(
+        `OpenCode CLI no pudo completar la solicitud: ${message}`,
+      );
+    }
+  }
+}
+
+function runOpenCode(
+  executable: string,
+  args: string[],
+  directory: string,
+  systemPrompt: string,
+): Promise<{ readonly stdout: string; readonly stderr: string }> {
+  return runWithTemporaryInstructions();
+
+  async function runWithTemporaryInstructions(): Promise<{
+    readonly stdout: string;
+    readonly stderr: string;
+  }> {
+    const instructionsDirectory = await mkdtemp(
+      join(tmpdir(), 'agentic-sdk-opencode-'),
+    );
+    const instructionsPath = join(instructionsDirectory, 'AGENTS.md');
+
+    try {
+      await writeFile(instructionsPath, systemPrompt, 'utf8');
+      return await execute({
+        ...process.env,
+        OPENCODE_CONFIG_CONTENT: JSON.stringify({
+          instructions: [instructionsPath],
+        }),
+      });
+    } finally {
+      await rm(instructionsDirectory, { recursive: true, force: true });
+    }
+  }
+
+  function execute(
+    env: NodeJS.ProcessEnv,
+  ): Promise<{ readonly stdout: string; readonly stderr: string }> {
+    return new Promise((resolve, reject) => {
+      const useShell = needsShell(executable);
+      const child = spawn(
+        executable,
+        useShell ? args.map(quoteForShell) : args,
+        {
+          cwd: directory,
+          env,
+          windowsHide: true,
+          shell: useShell,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        },
+      );
+      let stdout = '';
+      let stderr = '';
+
+      child.stdout.on('data', (chunk: Buffer) => {
+        stdout += chunk.toString();
+        if (debugEnabled()) {
+          process.stderr.write(chunk);
+        }
+      });
+      child.stderr.on('data', (chunk: Buffer) => {
+        stderr += chunk.toString();
+        if (debugEnabled()) {
+          process.stderr.write(chunk);
+        }
+      });
+      child.on('error', reject);
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ stdout, stderr });
+          return;
+        }
+
+        reject(
+          new Error(
+            stderr.trim() ||
+              `Proceso finalizó con código ${code ?? 'desconocido'}`,
+          ),
+        );
+      });
+      child.stdin.end();
+    });
+  }
+}
+
+function createWorkspaceSystemPrompt(directory: string): string {
+  return [
+    'Trabaja exclusivamente dentro del workspace autorizado.',
+    `Workspace autorizado: ${directory}`,
+    'Interpreta rutas como /projects o projects como un directorio projects dentro del workspace.',
+    'No uses rutas de la raíz del sistema ni accedas a C:\\, /, /c o directorios externos.',
+    'Si una instrucción solicita una ruta externa, pide confirmación antes de usarla.',
+  ].join('\n');
+}
+
+function withStatusProtocol(systemPrompt: string): string {
+  return [systemPrompt.trim(), TASK_AGENT_STATUS_INSTRUCTIONS].join('\n\n');
+}
+
+function resolveOpenCodeExecutable(): string {
+  const override = process.env.OPENCODE_BIN?.trim();
+  if (override !== undefined && override.length > 0) {
+    return override;
+  }
+
+  if (process.platform !== 'win32') {
+    return 'opencode';
+  }
+
+  const candidates = [
+    join(
+      process.env.APPDATA ?? '',
+      'npm',
+      'node_modules',
+      'opencode-ai',
+      'bin',
+      'opencode.exe',
+    ),
+    join(homedir(), '.opencode', 'bin', 'opencode.exe'),
+    join(process.env.LOCALAPPDATA ?? '', 'opencode', 'bin', 'opencode.exe'),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  const onPath = findOnPath(['opencode.exe', 'opencode.cmd', 'opencode.bat']);
+  return onPath ?? 'opencode.cmd';
+}
+
+function findOnPath(fileNames: string[]): string | undefined {
+  const directories = (process.env.PATH ?? '').split(delimiter);
+
+  for (const directory of directories) {
+    if (directory.length === 0) {
+      continue;
+    }
+
+    for (const fileName of fileNames) {
+      const candidate = join(directory, fileName);
+      if (existsSync(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function debugEnabled(): boolean {
+  return process.env.OPENCODE_DEBUG === '1';
+}
+
+function thinkingEnabled(): boolean {
+  const value = process.env.OPENCODE_THINKING?.trim().toLowerCase();
+  return value === '1' || value === 'true';
+}
+
+function needsShell(executable: string): boolean {
+  return process.platform === 'win32' && /\.(cmd|bat)$/i.test(executable);
+}
+
+function quoteForShell(arg: string): string {
+  if (arg.length === 0) {
+    return '""';
+  }
+
+  if (!/[\s"&|<>^]/.test(arg)) {
+    return arg;
+  }
+
+  return `"${arg.replace(/"/g, '""')}"`;
+}
+
+function extractCliResponse(output: string): string {
+  const lines = output.trim().split(/\r?\n/);
+  if (lines[0]?.startsWith('> ')) {
+    lines.shift();
+  }
+
+  return lines.join('\n').trim();
+}

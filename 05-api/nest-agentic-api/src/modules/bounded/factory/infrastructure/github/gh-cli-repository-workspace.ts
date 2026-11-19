@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { AGENT_WORK_ROOT } from '../../../../../global/agent.config';
+import { ghExecutable, ghGitEnv } from './gh-git-env';
 
 export interface RepositoryTarget {
   readonly owner: string;
@@ -20,19 +21,19 @@ export interface PreparedRepository {
 export interface PublishResult {
   readonly pushed: boolean;
   readonly commitSha: string | null;
+  readonly branch: string | null;
 }
 
 const COMMAND_TIMEOUT_MS = 5 * 60 * 1_000;
 
 /**
  * Crea/clona repos de GitHub con la sesión de `gh` de la máquina
- * y publica los cambios del agente. El agente nunca ejecuta git ni gh:
- * solo edita archivos dentro del clon.
+ * y publica lo que el agente deje pendiente en el clon.
  */
 @Injectable()
 export class GhCliRepositoryWorkspace {
   private readonly logger = new Logger(GhCliRepositoryWorkspace.name);
-  private readonly gh = process.env.GH_BIN?.trim() || 'gh';
+  private readonly gh = ghExecutable();
 
   async prepare(
     repo: RepositoryTarget,
@@ -57,7 +58,8 @@ export class GhCliRepositoryWorkspace {
         '--description',
         options.description.slice(0, 350),
       ]);
-      url = output.trim().split(/\r?\n/).pop() ?? `https://github.com/${fullName}`;
+      url =
+        output.trim().split(/\r?\n/).pop() ?? `https://github.com/${fullName}`;
       created = true;
     } else {
       this.logger.log(`Repo ${fullName} ya existe: ${url}`);
@@ -68,25 +70,55 @@ export class GhCliRepositoryWorkspace {
     return { directory, url, created };
   }
 
-  async publish(
-    directory: string,
-    baseBranch: string,
-    message: string,
-  ): Promise<PublishResult> {
+  /**
+   * Red de seguridad tras el agente: commitea lo que haya quedado sin
+   * commit y empuja la rama actual si tiene commits que origin no tiene.
+   * Si el agente ya hizo commit y push él mismo, no hace nada.
+   */
+  async publish(directory: string, message: string): Promise<PublishResult> {
     await this.git(directory, ['add', '-A']);
 
     const status = await this.git(directory, ['status', '--porcelain']);
-    if (status.trim().length === 0) {
-      this.logger.warn(`Sin cambios para publicar en ${directory}`);
-      return { pushed: false, commitSha: null };
+    if (status.trim().length > 0) {
+      await this.git(directory, ['commit', '-m', message]);
     }
 
-    await this.git(directory, ['commit', '-m', message]);
-    await this.git(directory, ['push', '-u', 'origin', baseBranch]);
+    const hasCommits = await this.git(directory, [
+      'rev-parse',
+      '--verify',
+      'HEAD',
+    ])
+      .then(() => true)
+      .catch(() => false);
+
+    if (!hasCommits) {
+      this.logger.warn(`Sin cambios para publicar en ${directory}`);
+      return { pushed: false, commitSha: null, branch: null };
+    }
+
+    const branch = (
+      await this.git(directory, ['rev-parse', '--abbrev-ref', 'HEAD'])
+    ).trim();
     const commitSha = (await this.git(directory, ['rev-parse', 'HEAD'])).trim();
 
-    this.logger.log(`Push a ${baseBranch} commit=${commitSha}`);
-    return { pushed: true, commitSha };
+    await this.git(directory, ['fetch', 'origin']);
+    const remoteSha = await this.git(directory, [
+      'rev-parse',
+      '--verify',
+      `origin/${branch}`,
+    ])
+      .then((sha) => sha.trim())
+      .catch(() => null);
+
+    if (remoteSha === commitSha) {
+      this.logger.log(`Rama ${branch} ya publicada commit=${commitSha}`);
+      return { pushed: true, commitSha, branch };
+    }
+
+    await this.git(directory, ['push', '-u', 'origin', branch]);
+
+    this.logger.log(`Push a ${branch} commit=${commitSha}`);
+    return { pushed: true, commitSha, branch };
   }
 
   private async findRepository(fullName: string): Promise<string | null> {
@@ -151,18 +183,7 @@ export class GhCliRepositoryWorkspace {
   }
 
   private git(cwd: string, args: string[]): Promise<string> {
-    // Credenciales vía `gh` solo para estos comandos; no toca la config global.
-    return this.run(
-      'git',
-      [
-        '-c',
-        'credential.helper=',
-        '-c',
-        `credential.helper=!"${this.gh.replace(/\\/g, '/')}" auth git-credential`,
-        ...args,
-      ],
-      cwd,
-    );
+    return this.run('git', args, cwd);
   }
 
   private run(command: string, args: string[], cwd?: string): Promise<string> {
@@ -175,13 +196,14 @@ export class GhCliRepositoryWorkspace {
           windowsHide: true,
           timeout: COMMAND_TIMEOUT_MS,
           maxBuffer: 10 * 1024 * 1024,
-          env: { ...process.env, GIT_TERMINAL_PROMPT: '0', GH_PROMPT_DISABLED: '1' },
+          // Credenciales vía `gh`; no toca la config global de git.
+          env: { ...process.env, ...ghGitEnv() },
         },
         (error, stdout, stderr) => {
           if (error) {
             reject(
               new Error(
-                `${command} ${args.filter((a) => !a.startsWith('credential.')).join(' ')} falló: ${stderr.trim() || error.message}`,
+                `${command} ${args.join(' ')} falló: ${stderr.trim() || error.message}`,
               ),
             );
             return;

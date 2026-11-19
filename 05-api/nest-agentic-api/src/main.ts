@@ -10,7 +10,7 @@ import { resolveQueueConfig } from './global/queue.config';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const port = Number(process.env.PORT ?? 3003);
+  const port = Number(process.env.PORT ?? 3006);
   const host = process.env.HOST?.trim() || '127.0.0.1';
   const agentAdapter = resolveAgentAdapter();
   const queue = resolveQueueConfig();

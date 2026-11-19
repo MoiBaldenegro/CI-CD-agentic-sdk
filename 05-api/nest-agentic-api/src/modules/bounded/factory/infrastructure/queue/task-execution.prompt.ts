@@ -3,7 +3,11 @@ import {
   type TaskPrimitives,
 } from 'lib/factory';
 
-export function buildTaskExecutionPrompt(task: TaskPrimitives): string {
+export function buildTaskExecutionPrompt(
+  task: TaskPrimitives,
+  repositoryUrl?: string,
+  gitAccess = false,
+): string {
   const acceptanceCriteria =
     task.acceptanceCriteria.length > 0
       ? task.acceptanceCriteria.map((item) => `- ${item}`).join('\n')
@@ -40,6 +44,15 @@ export function buildTaskExecutionPrompt(task: TaskPrimitives): string {
     '',
     'Trabaja dentro del workspace autorizado y no accedas a rutas externas.',
     '',
+    ...(repositoryUrl
+      ? [
+          `Tu directorio actual es un clon de ${repositoryUrl}.`,
+          gitAccess
+            ? 'Crea o modifica los archivos directamente en él. Puedes hacer commit y push tú mismo; si dejas cambios pendientes, la fábrica los publica al terminar.'
+            : 'Crea o modifica los archivos directamente en él. No ejecutes git ni gh.',
+          '',
+        ]
+      : []),
     TASK_AGENT_STATUS_INSTRUCTIONS,
   ].join('\n');
 }

@@ -37,7 +37,7 @@ import {
   CreateTaskRequest,
   SendPromptRequest,
 } from './factory.dto';
-import { Public } from '../../../../shared/guards/api-key.guard';
+import { Public } from '../../../../shared/auth/auth.guard';
 import { renderTaskDashboard } from './task-dashboard.page';
 
 @Controller('factory')

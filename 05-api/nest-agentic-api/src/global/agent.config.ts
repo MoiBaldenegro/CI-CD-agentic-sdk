@@ -7,6 +7,8 @@ export interface OpenCodeCliConfig {
   model?: string;
   systemPrompt?: string;
   timeoutMs: number;
+  /** El agente puede usar git/gh con la sesión de `gh` de la máquina. */
+  gitAccess: boolean;
 }
 
 /** Directorio raíz donde los agentes tienen permitido trabajar (ver AGENTS.md). */
@@ -35,7 +37,13 @@ export function resolveOpenCodeCliConfig(): OpenCodeCliConfig {
     systemPrompt: optionalEnv('OPENCODE_SYSTEM_PROMPT'),
     timeoutMs:
       Number.isFinite(timeout) && timeout > 0 ? timeout : DEFAULT_TIMEOUT_MS,
+    gitAccess: agentGitAccessEnabled(),
   };
+}
+
+export function agentGitAccessEnabled(): boolean {
+  const value = process.env.AGENT_GIT_ACCESS?.trim().toLowerCase();
+  return value === '1' || value === 'true';
 }
 
 /**

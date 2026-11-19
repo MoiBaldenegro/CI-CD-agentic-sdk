@@ -47,6 +47,7 @@ export class AgentPromptService implements AgentPromptServicePort {
     const response = await this.gateway.sendPrompt(agent, {
       text: prompt.text.trim(),
       workingDirectory: prompt.workingDirectory,
+      toolsEnabled: prompt.toolsEnabled,
     });
 
     this.validateResponse(response);

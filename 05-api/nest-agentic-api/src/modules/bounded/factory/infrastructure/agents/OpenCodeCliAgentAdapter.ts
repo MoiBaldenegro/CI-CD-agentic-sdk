@@ -12,12 +12,14 @@ import {
   type AgentResponse,
 } from 'lib/factory';
 import { resolveWorkspace } from '../../../../../global/agent.config';
+import { ghGitEnv } from '../github/gh-git-env';
 
 export interface OpenCodeCliAgentAdapterOptions {
   readonly directory: string;
   readonly model?: string;
   readonly systemPrompt?: string;
   readonly timeoutMs: number;
+  readonly gitAccess: boolean;
 }
 
 export class OpenCodeCliAgentAdapter implements AgentGateway {
@@ -33,9 +35,14 @@ export class OpenCodeCliAgentAdapter implements AgentGateway {
       throw new Error(`Unsupported agent provider: ${agent.provider}`);
     }
 
-    // La carpeta pedida se valida: debe estar dentro de ./work-directory.
-    const directory =
-      prompt.workingDirectory !== undefined
+    const chatOnly = prompt.toolsEnabled === false;
+
+    // Modo conversación: carpeta temporal vacía + todas las herramientas
+    // bloqueadas. Modo normal: la carpeta pedida debe estar dentro de
+    // ./work-directory.
+    const directory = chatOnly
+      ? await mkdtemp(join(tmpdir(), 'agentic-sdk-chat-'))
+      : prompt.workingDirectory !== undefined
         ? resolveWorkspace(prompt.workingDirectory)
         : this.options.directory;
     const executable = resolveOpenCodeExecutable();
@@ -57,22 +64,31 @@ export class OpenCodeCliAgentAdapter implements AgentGateway {
     args.push(prompt.text);
 
     this.logger.log(
-      `Enviando prompt a OpenCode CLI (agent=${agent.provider}:${agent.agentId}, model=${model ?? 'default'}, cwd=${directory}, chars=${prompt.text.length})`,
+      `Enviando prompt a OpenCode CLI (agent=${agent.provider}:${agent.agentId}, model=${model ?? 'default'}, mode=${chatOnly ? 'chat' : 'tools'}, cwd=${directory}, chars=${prompt.text.length})`,
     );
     this.logger.log(`Ejecutando: ${executable} ${args.join(' ')}`);
 
     try {
       await mkdir(directory, { recursive: true });
 
-      const result = await runOpenCode(
-        executable,
-        args,
-        directory,
-        withStatusProtocol(
-          this.options.systemPrompt ?? createWorkspaceSystemPrompt(directory),
-        ),
-        this.options.timeoutMs,
-      );
+      const result = chatOnly
+        ? await runOpenCode(executable, args, directory, {
+            systemPrompt: CHAT_SYSTEM_PROMPT,
+            timeoutMs: CHAT_TIMEOUT_MS,
+            extraEnv: {},
+            permission: DENY_ALL_TOOLS,
+          })
+        : await runOpenCode(executable, args, directory, {
+            systemPrompt: withStatusProtocol(
+              this.options.systemPrompt ??
+                createWorkspaceSystemPrompt(directory, this.options.gitAccess),
+            ),
+            timeoutMs: this.options.timeoutMs,
+            extraEnv: this.options.gitAccess ? ghGitEnv() : {},
+            // Bloquea lecturas/escrituras fuera del cwd (el workspace).
+            // En `opencode run` no hay humano para aprobar, así que "deny".
+            permission: { external_directory: 'deny' },
+          });
       const text = extractCliResponse(result.stdout);
 
       if (text.length === 0) {
@@ -100,16 +116,55 @@ export class OpenCodeCliAgentAdapter implements AgentGateway {
       throw new Error(
         `OpenCode CLI no pudo completar la solicitud: ${message}`,
       );
+    } finally {
+      if (chatOnly) {
+        await rm(directory, { recursive: true, force: true });
+      }
     }
   }
+}
+
+const CHAT_TIMEOUT_MS = 3 * 60 * 1_000;
+
+const CHAT_SYSTEM_PROMPT = [
+  'Estás en modo conversación: no tienes herramientas.',
+  'No intentes leer, crear ni modificar archivos, ni ejecutar comandos.',
+  'Responde únicamente con texto, siguiendo el formato que pida el mensaje.',
+].join('\n');
+
+// `read` NO se bloquea: con read=deny OpenCode 1.18 se cuelga (lo necesita
+// internamente). Es seguro porque el modo conversación corre en una carpeta
+// temporal vacía y external_directory=deny impide leer fuera de ella.
+const DENY_ALL_TOOLS = Object.fromEntries(
+  [
+    'edit',
+    'glob',
+    'grep',
+    'list',
+    'bash',
+    'task',
+    'external_directory',
+    'todowrite',
+    'question',
+    'webfetch',
+    'websearch',
+    'lsp',
+    'skill',
+  ].map((tool) => [tool, 'deny']),
+);
+
+interface RunOpenCodeOptions {
+  readonly systemPrompt: string;
+  readonly timeoutMs: number;
+  readonly extraEnv: NodeJS.ProcessEnv;
+  readonly permission: Record<string, string>;
 }
 
 function runOpenCode(
   executable: string,
   args: string[],
   directory: string,
-  systemPrompt: string,
-  timeoutMs: number,
+  { systemPrompt, timeoutMs, extraEnv, permission }: RunOpenCodeOptions,
 ): Promise<{ readonly stdout: string; readonly stderr: string }> {
   return runWithTemporaryInstructions();
 
@@ -126,11 +181,10 @@ function runOpenCode(
       await writeFile(instructionsPath, systemPrompt, 'utf8');
       return await execute({
         ...process.env,
+        ...extraEnv,
         OPENCODE_CONFIG_CONTENT: JSON.stringify({
           instructions: [instructionsPath],
-          // Bloquea lecturas/escrituras fuera del cwd (el workspace).
-          // En `opencode run` no hay humano para aprobar, así que "deny".
-          permission: { external_directory: 'deny' },
+          permission,
         }),
       });
     } finally {
@@ -228,14 +282,19 @@ function killProcessTree(pid: number | undefined): void {
   }
 }
 
-function createWorkspaceSystemPrompt(directory: string): string {
+function createWorkspaceSystemPrompt(
+  directory: string,
+  gitAccess: boolean,
+): string {
   return [
     'Trabaja exclusivamente dentro del workspace autorizado.',
     `Workspace autorizado: ${directory}`,
     'Interpreta rutas como /projects o projects como un directorio projects dentro del workspace.',
     'No uses rutas de la raíz del sistema ni accedas a C:\\, /, /c o directorios externos.',
     'Si una instrucción solicita una ruta externa, pide confirmación antes de usarla.',
-    'No ejecutes git ni gh: la fábrica se encarga de commits, push y repositorios.',
+    gitAccess
+      ? 'Puedes usar git y gh (sesión de GitHub ya autenticada) solo sobre el repositorio de este directorio: commits, ramas, push, PRs e issues de ese repo. No crees, borres ni modifiques otros repositorios, no cambies su configuración ni la visibilidad, y no hagas push --force.'
+      : 'No ejecutes git ni gh: la fábrica se encarga de commits, push y repositorios.',
   ].join('\n');
 }
 

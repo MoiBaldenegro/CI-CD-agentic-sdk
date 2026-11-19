@@ -1,0 +1,6 @@
+# Clones de repos que crea/usa la fábrica (cada uno vive en su propio repo de GitHub)
+work-directory/repos/
+
+# Runtime del server
+server.pid
+*.log

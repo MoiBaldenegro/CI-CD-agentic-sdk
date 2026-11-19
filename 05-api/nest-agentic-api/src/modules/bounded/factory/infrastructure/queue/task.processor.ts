@@ -11,6 +11,12 @@ import {
   type TaskPrimitives,
 } from 'lib/factory';
 import { TASK_QUEUE_NAME, type TaskQueueJobData } from 'lib/queue';
+import {
+  GhCliRepositoryWorkspace,
+  type PreparedRepository,
+  type PublishResult,
+} from '../github/gh-cli-repository-workspace';
+import { agentGitAccessEnabled } from '../../../../../global/agent.config';
 import { buildTaskExecutionPrompt } from './task-execution.prompt';
 
 const SKIPPABLE_STATUSES = new Set([
@@ -27,6 +33,7 @@ export class TaskProcessor extends WorkerHost {
   constructor(
     private readonly taskApplicationService: TaskApplicationService,
     private readonly agentApplicationService: AgentApplicationService,
+    private readonly repositoryWorkspace: GhCliRepositoryWorkspace,
   ) {
     super();
   }
@@ -52,8 +59,20 @@ export class TaskProcessor extends WorkerHost {
     let task = await this.moveToInProgress(current);
 
     try {
-      const outcome = await this.executeTask(task);
-      task = await this.applyOutcome(task.id, outcome);
+      const workspace = await this.prepareRepository(task);
+      const outcome = await this.executeTask(task, workspace);
+      const published =
+        workspace !== null && outcome.status !== 'BLOCKED'
+          ? await this.repositoryWorkspace.publish(
+              workspace.directory,
+              `${task.title}\n\nFactory task: ${task.id}`,
+            )
+          : null;
+
+      task = await this.applyOutcome(
+        task.id,
+        withRepositoryInfo(outcome, workspace, published),
+      );
 
       this.logger.log(
         `Job ${job.id} terminado taskId=${taskId} outcome=${outcome.status} status=${task.status}`,
@@ -91,7 +110,29 @@ export class TaskProcessor extends WorkerHost {
     return current;
   }
 
-  private async executeTask(task: TaskPrimitives): Promise<TaskAgentOutcome> {
+  private async prepareRepository(
+    task: TaskPrimitives,
+  ): Promise<PreparedRepository | null> {
+    if (!githubEnabled()) {
+      return null;
+    }
+
+    const prepared = await this.repositoryWorkspace.prepare(task.repository, {
+      description: task.title,
+      visibility: task.metadata.visibility === 'public' ? 'public' : 'private',
+    });
+
+    this.logger.log(
+      `Repo listo ${prepared.url} (created=${prepared.created}) en ${prepared.directory}`,
+    );
+
+    return prepared;
+  }
+
+  private async executeTask(
+    task: TaskPrimitives,
+    workspace: PreparedRepository | null,
+  ): Promise<TaskAgentOutcome> {
     const agent = Agent.create({
       provider: task.assignee?.provider ?? 'opencode',
       agentId: task.assignee?.agentId ?? 'builder-01',
@@ -103,7 +144,12 @@ export class TaskProcessor extends WorkerHost {
     );
 
     const response = await this.agentApplicationService.sendPrompt(agent, {
-      text: buildTaskExecutionPrompt(task),
+      text: buildTaskExecutionPrompt(
+        task,
+        workspace?.url,
+        agentGitAccessEnabled(),
+      ),
+      workingDirectory: workspace?.directory,
     });
 
     return parseTaskAgentOutcome(response.text);
@@ -164,4 +210,31 @@ export class TaskProcessor extends WorkerHost {
       );
     }
   }
+}
+
+function githubEnabled(): boolean {
+  const value = process.env.GITHUB_ENABLED?.trim().toLowerCase();
+  return value === '1' || value === 'true';
+}
+
+function withRepositoryInfo(
+  outcome: TaskAgentOutcome,
+  workspace: PreparedRepository | null,
+  published: PublishResult | null,
+): TaskAgentOutcome {
+  if (workspace === null) {
+    return outcome;
+  }
+
+  const lines = [`Repositorio: ${workspace.url}`];
+  if (published?.pushed) {
+    lines.push(`Rama: ${published.branch}`, `Commit: ${published.commitSha}`);
+  } else if (published !== null) {
+    lines.push('Sin cambios para publicar.');
+  }
+
+  return {
+    ...outcome,
+    summary: `${outcome.summary}\n\n${lines.join('\n')}`,
+  };
 }

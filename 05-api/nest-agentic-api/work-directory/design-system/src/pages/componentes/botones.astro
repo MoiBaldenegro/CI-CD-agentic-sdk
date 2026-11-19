@@ -1,0 +1,343 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Button from "../../components/Button.astro";
+import Demo from "../../components/Demo.astro";
+
+const variantsCode = `<Button>Guardar cambios</Button>
+<Button variant="secondary">Cancelar</Button>
+<Button variant="soft">Editar</Button>
+<Button variant="ghost">Ver detalles</Button>
+<Button variant="danger">Eliminar</Button>`;
+
+const sizesCode = `<Button size="sm">Pequeño</Button>
+<Button size="md">Mediano</Button>
+<Button size="lg">Grande</Button>`;
+
+const iconsCode = `<Button>
+  <svg>Añadir</svg>
+  Nuevo informe
+</Button>
+<Button variant="secondary">
+  Descargar CSV
+</Button>`;
+
+const statesCode = `<Button>Acción principal</Button>
+<Button disabled>Deshabilitado</Button>
+<Button variant="secondary" disabled>No disponible</Button>`;
+
+const props = [
+  { name: "variant", type: `"primary" | "secondary" | "soft" | "ghost" | "danger"`, def: `"primary"`, desc: "Jerarquía visual de la acción." },
+  { name: "size", type: `"sm" | "md" | "lg"`, def: `"md"`, desc: "Altura y padding del control." },
+  { name: "href", type: "string", def: "—", desc: "Renderiza un <a> en lugar de <button>." },
+  { name: "type", type: `"button" | "submit" | "reset"`, def: `"button"`, desc: "Tipo del botón nativo." },
+  { name: "full", type: "boolean", def: "false", desc: "Ocupa el 100% del contenedor." },
+  { name: "iconOnly", type: "boolean", def: "false", desc: "Cuadrado para un icono accesible." },
+  { name: "disabled", type: "boolean", def: "false", desc: "Inhabilita la interacción." },
+];
+---
+
+<Base title="Botones" showToc>
+  <PageHeader
+    eyebrow="Componentes · Acciones"
+    title="Botones"
+    lead="El botón comunica jerarquía. Una vista tiene una sola acción primaria; todo lo demás se ordena con secundarios, suaves y fantasma hasta llegar a la acción destructiva."
+    meta={["5 variantes", "3 tamaños", "Estados completos"]}
+  />
+
+  <section class="block">
+    <h2>Variantes</h2>
+    <p class="ds-muted block__lead">
+      La variante expresa la importancia de la acción, no su color favorito. Primaria para el
+      siguiente paso; secundaria para alternativas; fantasma para acciones de bajo peso.
+    </p>
+    <Demo code={variantsCode} label="Variantes">
+      <Button>Guardar cambios</Button>
+      <Button variant="secondary">Cancelar</Button>
+      <Button variant="soft">Editar</Button>
+      <Button variant="ghost">Ver detalles</Button>
+      <Button variant="danger">Eliminar</Button>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Tamaños</h2>
+    <p class="ds-muted block__lead">
+      <code>sm</code> se usa en barras de herramientas y tablas; <code>md</code> es el tamaño por
+      defecto; <code>lg</code> se reserva para formularios de entrada y hero.
+    </p>
+    <Demo code={sizesCode} label="Escala">
+      <Button size="sm">Pequeño</Button>
+      <Button size="md">Mediano</Button>
+      <Button size="lg">Grande</Button>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Con iconos</h2>
+    <p class="ds-muted block__lead">
+      El icono acompaña, no reemplaza. Colócalo antes del texto para acciones de crear o añadir, y
+      después para acciones de avance.
+    </p>
+    <Demo code={iconsCode} label="Iconos">
+      <Button>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        Nuevo informe
+      </Button>
+      <Button variant="secondary">
+        Descargar CSV
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"></path>
+        </svg>
+      </Button>
+      <Button variant="ghost" iconOnly aria-label="Configuración">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path>
+        </svg>
+      </Button>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Estados</h2>
+    <p class="ds-muted block__lead">
+      Un botón deshabilitado no explica por qué. Cuando la razón no es obvia, acompaña con un texto
+      de ayuda o usa una validación en el formulario.
+    </p>
+    <Demo code={statesCode} label="Estados">
+      <Button>Acción principal</Button>
+      <Button disabled>Deshabilitado</Button>
+      <Button variant="secondary" disabled>No disponible</Button>
+      <Button variant="soft">
+        <span class="spinner" aria-hidden="true"></span>
+        Procesando…
+      </Button>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Ancho completo</h2>
+    <div class="full-demo">
+      <div class="full-demo__form">
+        <p class="full-demo__label">Invitar al equipo</p>
+        <code>usuario@aurora.app</code>
+        <Button full>Enviar invitación</Button>
+        <Button variant="ghost" full>Cancelar</Button>
+      </div>
+      <div class="full-demo__copy">
+        <p>
+          Úsalo cuando el botón sea el cierre natural de un flujo vertical, nunca en barras de
+          acciones horizontales. Un solo botón por ancho completo.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>API</h2>
+    <div class="table-wrap">
+      <table class="props-table">
+        <thead>
+          <tr><th>Prop</th><th>Tipo</th><th>Default</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          {
+            props.map((prop) => (
+              <tr>
+                <td><code>{prop.name}</code></td>
+                <td class="props-table__type">{prop.type}</td>
+                <td class="props-table__def">{prop.def}</td>
+                <td class="ds-muted">{prop.desc}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Cuándo usar cada variante</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="guideline guideline--do">
+        <p class="guideline__label">Hazlo</p>
+        <ul>
+          <li>Un único botón primario por vista o por paso de un flujo.</li>
+          <li>Etiquetas en verbo + objeto: «Crear informe», «Guardar cambios».</li>
+          <li>Acciones destructivas aisladas y con confirmación.</li>
+        </ul>
+      </div>
+      <div class="guideline guideline--dont">
+        <p class="guideline__label">Evítalo</p>
+        <ul>
+          <li>Dos botones primarios compitiendo en la misma sección.</li>
+          <li>«Aceptar» o «OK» como etiqueta única sin contexto.</li>
+          <li>Usar danger como decoración o para acciones reversibles.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+  .block h2 {
+    font-size: var(--ds-text-2xl);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-sm);
+    margin-bottom: var(--ds-space-5);
+  }
+  .block__lead code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.85em;
+    padding: 0.1em 0.3em;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-color-surface-sunken);
+  }
+
+  .spinner {
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .full-demo {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    gap: var(--ds-space-8);
+    align-items: center;
+  }
+  .full-demo__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-sm);
+  }
+  .full-demo__label {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .full-demo__form code {
+    display: block;
+    padding: 0.55rem 0.8rem;
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    background: var(--ds-color-surface-sunken);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-md);
+    margin-bottom: var(--ds-space-1);
+  }
+  .full-demo__copy p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-normal);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .props-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    min-width: 700px;
+  }
+  .props-table th {
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-color-text-muted);
+    background: var(--ds-color-surface-muted);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .props-table td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-color-border);
+    vertical-align: top;
+  }
+  .props-table tr:last-child td {
+    border-bottom: 0;
+  }
+  .props-table code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-primary);
+  }
+  .props-table__type,
+  .props-table__def {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-secondary);
+  }
+
+  .guideline {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    font-size: var(--ds-text-sm);
+  }
+  .guideline__label {
+    display: inline-block;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--ds-radius-full);
+  }
+  .guideline--do .guideline__label {
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+  }
+  .guideline--dont .guideline__label {
+    color: var(--ds-color-danger);
+    background: var(--ds-color-danger-soft);
+  }
+  .guideline ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-left: var(--ds-space-5);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+
+  @media (max-width: 760px) {
+    .full-demo {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--ds-space-4);
+    }
+  }
+</style>

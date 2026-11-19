@@ -34,7 +34,8 @@ Copiar `.env.example` a `.env` y ajustar según el proveedor:
 | `OPENROUTER_MODEL` | Modelo por defecto de OpenRouter (ej. `openai/gpt-4o-mini`). |
 | `OPENROUTER_SITE_URL` | (Opcional) `HTTP-Referer` para OpenRouter. |
 | `OPENROUTER_APP_NAME` | (Opcional) `X-Title` para OpenRouter. |
-| `OPENCODE_DEBUG` | Flag de debug para OpenCode. |
+| `OPENCODE_DEBUG` | `1` activa `--print-logs --log-level DEBUG` y muestra en vivo stdout/stderr de OpenCode. |
+| `OPENCODE_THINKING` | `1` activa `--thinking` para mostrar la cadena de pensamiento del modelo. |
 | `OPENCODE_SYSTEM_PROMPT` | Prompt de sistema usado por el adaptador/flujo de OpenCode. |
 
 ## Autenticación de Claude Code en Ubuntu sin navegador

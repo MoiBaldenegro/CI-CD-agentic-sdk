@@ -1,0 +1,81 @@
+---
+interface Props {
+  label: string;
+  name: string;
+  description?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  value?: string;
+}
+
+const {
+  label,
+  name,
+  description,
+  checked = false,
+  disabled = false,
+  required = false,
+  value,
+} = Astro.props;
+
+const id = `check-${name}`;
+---
+
+<div class="ds-check">
+  <input
+    class="ds-check__input"
+    type="checkbox"
+    id={id}
+    name={name}
+    value={value}
+    checked={checked}
+    disabled={disabled}
+    required={required}
+  />
+  <div class="ds-check__text">
+    <label class="ds-check__label" for={id}>{label}</label>
+    {description && <p class="ds-check__desc">{description}</p>}
+  </div>
+</div>
+
+<style>
+  .ds-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ds-space-3);
+  }
+
+  .ds-check__input {
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    accent-color: var(--ds-color-primary);
+    cursor: pointer;
+  }
+
+  .ds-check__input:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .ds-check__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ds-check__label {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-text);
+    cursor: pointer;
+  }
+
+  .ds-check__desc {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+</style>

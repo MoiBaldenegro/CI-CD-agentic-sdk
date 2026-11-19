@@ -1,0 +1,429 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Alert from "../../components/Alert.astro";
+import Badge from "../../components/Badge.astro";
+import Button from "../../components/Button.astro";
+import Demo from "../../components/Demo.astro";
+
+const alertCode = `<Alert variant="success" title="Informe publicado">
+  El informe ya está visible para todo el equipo.
+</Alert>`;
+
+const badgeCode = `<Badge variant="success" dot>Activo</Badge>
+<Badge variant="warning" dot>Pendiente</Badge>
+<Badge variant="danger" dot>Fallido</Badge>
+<Badge variant="info">Programado</Badge>`;
+---
+
+<Base title="Feedback" showToc>
+  <PageHeader
+    eyebrow="Componentes · Comunicación"
+    title="Feedback"
+    lead="Mensajes, estados y carga. El feedback debe ser inmediato, específico y con una salida clara: qué ha pasado y qué puede hacer el usuario a continuación."
+    meta={["4 alertas", "6 badges", "Estados vacíos y carga"]}
+  />
+
+  <section class="block">
+    <h2>Alertas</h2>
+    <p class="ds-muted block__lead">
+      Para mensajes en contexto, junto al contenido que afectan. El título dice qué ocurrió; el
+      cuerpo, qué hacer. Si el mensaje vive fuera de la página, usa un toast.
+    </p>
+    <div class="stack-demos">
+      <Alert variant="info" title="Nueva versión de tokens">
+        La paleta de estados se actualizó en la v1.0. Revisa los pares de contraste antes de migrar.
+      </Alert>
+      <Alert variant="success" title="Informe publicado">
+        El informe «Ingresos Q4» ya está visible para todo el equipo.
+      </Alert>
+      <Alert variant="warning" title="Conexión lenta">
+        Estamos reintentando sincronizar los datos. Los últimos cambios pueden tardar unos minutos.
+      </Alert>
+      <Alert variant="danger" title="No se pudo guardar">
+        Se perdió la conexión con el servidor. Vuelve a intentarlo; tus cambios siguen en el editor.
+      </Alert>
+    </div>
+    <Demo code={alertCode} label="Alerta" stack>
+      <Alert variant="success" title="Informe publicado">
+        El informe ya está visible para todo el equipo.
+      </Alert>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Badges</h2>
+    <p class="ds-muted block__lead">
+      Etiquetas compactas de estado o categoría. Usa <code>dot</code> cuando el estado sea binario o
+      en vivo; el texto debe tener sentido sin el color.
+    </p>
+    <Demo code={badgeCode} label="Badges">
+      <Badge variant="success" dot>Activo</Badge>
+      <Badge variant="warning" dot>Pendiente</Badge>
+      <Badge variant="danger" dot>Fallido</Badge>
+      <Badge variant="info">Programado</Badge>
+      <Badge variant="primary">Admin</Badge>
+      <Badge>Borrador</Badge>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Toast</h2>
+    <p class="ds-muted block__lead">
+      Confirmaciones breves tras una acción, en la esquina inferior derecha. Se descartan solos a los
+      5 segundos y nunca contienen acciones destructivas.
+    </p>
+    <div class="toast-stage">
+      <div class="toast" role="status">
+        <span class="toast__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+        </span>
+        <div class="toast__text">
+          <strong>Cambios guardados</strong>
+          <span>El informe se actualizó hace un momento.</span>
+        </div>
+        <button class="toast__close" type="button" aria-label="Cerrar notificación">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Estado vacío</h2>
+    <p class="ds-muted block__lead">
+      Explica qué falta, por qué importa y cuál es la primera acción. Nunca dejes un lienzo en blanco
+      sin salida.
+    </p>
+    <div class="empty">
+      <span class="empty__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"></path>
+          <path d="M7 15l4-4 3 3 5-6"></path>
+        </svg>
+      </span>
+      <h3>Aún no hay informes</h3>
+      <p>Crea tu primer informe para empezar a seguir las métricas del equipo.</p>
+      <Button size="sm">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        Crear informe
+      </Button>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Carga</h2>
+    <p class="ds-muted block__lead">
+      Esqueletos con la forma del contenido final, no spinners genéricos de página completa.
+      Anuncia la carga a lectores de pantalla con <code>aria-busy</code>.
+    </p>
+    <div class="skeleton-grid" aria-busy="true" aria-label="Cargando métricas">
+      <div class="skeleton-card">
+        <span class="sk sk--xs"></span>
+        <span class="sk sk--lg"></span>
+        <span class="sk sk--block"></span>
+      </div>
+      <div class="skeleton-card">
+        <span class="sk sk--xs"></span>
+        <span class="sk sk--lg"></span>
+        <span class="sk sk--block"></span>
+      </div>
+      <div class="skeleton-card">
+        <span class="sk sk--xs"></span>
+        <span class="sk sk--lg"></span>
+        <span class="sk sk--block"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Progreso</h2>
+    <div class="progress-list">
+      <div class="progress">
+        <div class="progress__head">
+          <span>Sincronización de datos</span>
+          <span class="progress__value">72%</span>
+        </div>
+        <div class="progress__track"><span style="width:72%"></span></div>
+        <p class="progress__hint">Importando 14.302 filas · quedan unos 20 s</p>
+      </div>
+      <div class="progress">
+        <div class="progress__head">
+          <span>Uso del plan</span>
+          <span class="progress__value">91%</span>
+        </div>
+        <div class="progress__track progress__track--warning"><span style="width:91%"></span></div>
+        <p class="progress__hint">Te queda 1 espacio de trabajo disponible este mes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Reglas</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="guideline guideline--do">
+        <p class="guideline__label">Hazlo</p>
+        <ul>
+          <li>Escribe mensajes en voz activa y sin tecnicismos.</li>
+          <li>Incluye el siguiente paso siempre que exista.</li>
+          <li>Usa <code>role="status"</code> para mensajes no urgentes.</li>
+        </ul>
+      </div>
+      <div class="guideline guideline--dont">
+        <p class="guideline__label">Evítalo</p>
+        <ul>
+          <li>Apilar múltiples alertas idénticas.</li>
+          <li>Mostrar «Error inesperado» sin contexto ni acción.</li>
+          <li>Usar toasts para errores que requieren decisión.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+  .block h2 {
+    font-size: var(--ds-text-2xl);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-sm);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .stack-demos {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .toast-stage {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--ds-space-8) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    background:
+      radial-gradient(var(--ds-color-border) 1px, transparent 1px) 0 0 / 18px 18px,
+      var(--ds-color-surface-muted);
+    border: 1px solid var(--ds-color-border);
+  }
+
+  .toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ds-space-3);
+    width: min(22rem, 100%);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface-raised);
+    box-shadow: var(--ds-shadow-lg);
+  }
+  .toast__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-success-soft);
+    color: var(--ds-color-success);
+    flex-shrink: 0;
+  }
+  .toast__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+  }
+  .toast__text strong {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .toast__text span {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+  .toast__close {
+    border: 0;
+    background: transparent;
+    color: var(--ds-color-text-muted);
+    padding: 0.2rem;
+    border-radius: var(--ds-radius-xs);
+  }
+  .toast__close:hover {
+    background: var(--ds-color-surface-sunken);
+    color: var(--ds-color-text);
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-12) var(--ds-space-6);
+    border: 1px dashed var(--ds-color-border-strong);
+    border-radius: var(--ds-radius-xl);
+    background: var(--ds-color-surface-muted);
+  }
+  .empty__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-primary-soft);
+    color: var(--ds-color-primary);
+    margin-bottom: var(--ds-space-1);
+  }
+  .empty h3 {
+    font-size: var(--ds-text-lg);
+  }
+  .empty p {
+    max-width: 24rem;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    margin-bottom: var(--ds-space-2);
+  }
+
+  .skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--ds-space-4);
+  }
+  .skeleton-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .sk {
+    display: block;
+    height: 0.75rem;
+    border-radius: var(--ds-radius-sm);
+    background: linear-gradient(
+      90deg,
+      var(--ds-color-surface-sunken) 25%,
+      var(--ds-color-border) 37%,
+      var(--ds-color-surface-sunken) 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+  .sk--xs {
+    width: 40%;
+    height: 0.55rem;
+  }
+  .sk--lg {
+    width: 70%;
+    height: 1.5rem;
+  }
+  .sk--block {
+    width: 100%;
+    height: 2.5rem;
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0 50%;
+    }
+  }
+
+  .progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    max-width: 34rem;
+  }
+  .progress {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .progress__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-medium);
+  }
+  .progress__value {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+  .progress__track {
+    height: 0.5rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-surface-sunken);
+    overflow: hidden;
+  }
+  .progress__track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ds-gradient-brand);
+    transition: width var(--ds-duration-slow) var(--ds-ease-out);
+  }
+  .progress__track--warning span {
+    background: linear-gradient(90deg, var(--ds-color-warning), #f59e0b);
+  }
+  .progress__hint {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .guideline {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    font-size: var(--ds-text-sm);
+  }
+  .guideline__label {
+    display: inline-block;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--ds-radius-full);
+  }
+  .guideline--do .guideline__label {
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+  }
+  .guideline--dont .guideline__label {
+    color: var(--ds-color-danger);
+    background: var(--ds-color-danger-soft);
+  }
+  .guideline ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-left: var(--ds-space-5);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+</style>

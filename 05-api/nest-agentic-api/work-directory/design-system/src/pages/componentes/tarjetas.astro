@@ -1,0 +1,370 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Card from "../../components/Card.astro";
+import Badge from "../../components/Badge.astro";
+import Button from "../../components/Button.astro";
+import Avatar from "../../components/Avatar.astro";
+import Demo from "../../components/Demo.astro";
+
+const basicCode = `<Card title="Resumen de ingresos">
+  <p>Los ingresos recurrentes crecieron un 12,4% este trimestre.</p>
+</Card>`;
+
+const footerCode = `<Card eyebrow="Informe" title="Ingresos Q4">
+  <p>Datos consolidados de octubre a diciembre.</p>
+  <Button slot="footer" variant="secondary" size="sm">Abrir</Button>
+</Card>`;
+
+const stats = [
+  { label: "Ingresos recurrentes", value: "€48.2k", delta: "+12,4%", up: true },
+  { label: "Usuarios activos", value: "3.204", delta: "+8,1%", up: true },
+  { label: "Tasa de churn", value: "2,1%", delta: "−0,4%", up: true },
+];
+---
+
+<Base title="Tarjetas" showToc>
+  <PageHeader
+    eyebrow="Componentes · Contenedores"
+    title="Tarjetas"
+    lead="La tarjeta agrupa información relacionada y define un límite interactivo. Se usa para unidades de contenido, no para envolver cualquier bloque de la página."
+    meta={["3 niveles de padding", "Variante interactiva", "Slots de cabecera y pie"]}
+  />
+
+  <section class="block">
+    <h2>Básica</h2>
+    <Demo code={basicCode} label="Card">
+      <div class="demo-card">
+        <Card title="Resumen de ingresos">
+          <p>Los ingresos recurrentes crecieron un 12,4% este trimestre.</p>
+        </Card>
+      </div>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Con cabecera y pie</h2>
+    <p class="ds-muted block__lead">
+      El <code>eyebrow</code> contextualiza y el pie aloja acciones. Evita más de dos acciones en
+      el pie.
+    </p>
+    <Demo code={footerCode} label="Card completa">
+      <div class="demo-card">
+        <Card eyebrow="Informe" title="Ingresos Q4">
+          <p>Datos consolidados de octubre a diciembre, desglosados por plan y región.</p>
+          <Button slot="footer" variant="secondary" size="sm">Abrir</Button>
+          <Button slot="footer" variant="ghost" size="sm">Duplicar</Button>
+        </Card>
+      </div>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Tarjetas de métrica</h2>
+    <p class="ds-muted block__lead">
+      Para KPIs, la cifra domina y la variación se marca con color de estado. Nunca uses color como
+      único indicador: añade la flecha o el signo.
+    </p>
+    <div class="ds-grid ds-grid--3">
+      {
+        stats.map((stat) => (
+          <div class="stat">
+            <div class="stat__head">
+              <span class="stat__label">{stat.label}</span>
+              <Badge variant={stat.up ? "success" : "danger"} size="sm">
+                {stat.up ? "▲" : "▼"} {stat.delta}
+              </Badge>
+            </div>
+            <strong class="stat__value">{stat.value}</strong>
+            <div class="stat__spark" aria-hidden="true">
+              {[30, 42, 38, 55, 50, 67, 60, 78, 72, 88].map((h, index) => (
+                <span style={`height:${h}%;opacity:${(0.35 + index * 0.06).toFixed(2)}`}></span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Interactiva</h2>
+    <p class="ds-muted block__lead">
+      Una tarjeta clicable debe serlo completa. Si convive con acciones internas, no la hagas
+      interactiva: usa un enlace explícito.
+    </p>
+    <div class="ds-grid ds-grid--2">
+      <a href="/componentes/botones" class="card-link">
+        <Card eyebrow="Guía" title="Jerarquía de acciones" interactive>
+          <p>Cómo decidir entre primaria, secundaria y destructiva sin competir por atención.</p>
+          <span class="card-link__cta">Leer guía →</span>
+        </Card>
+      </a>
+      <a href="/fundamentos/colores" class="card-link">
+        <Card eyebrow="Fundamentos" title="Contraste y accesibilidad" interactive>
+          <p>Pares validados para texto, superficies y estados en ambos temas.</p>
+          <span class="card-link__cta">Ver colores →</span>
+        </Card>
+      </a>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Composición: perfil</h2>
+    <div class="profile-grid">
+      <Card padding="lg">
+        <div class="profile">
+          <Avatar name="Lucía Ortega" size="lg" status="online" />
+          <div class="profile__info">
+            <div class="profile__name-row">
+              <h3>Lucía Ortega</h3>
+              <Badge variant="primary" size="sm">Admin</Badge>
+            </div>
+            <p class="profile__role">Lead de analítica · Madrid</p>
+            <p class="profile__bio">
+              Responsable del modelo de datos y de los paneles ejecutivos de la plataforma.
+            </p>
+            <div class="profile__actions">
+              <Button size="sm">Ver perfil</Button>
+              <Button variant="secondary" size="sm">Mensaje</Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Miembros del equipo" eyebrow="Workspace">
+        <ul class="member-list">
+          {
+            [
+              { name: "Lucía Ortega", role: "Admin", status: "online" as const },
+              { name: "Marco Silva", role: "Analista", status: "online" as const },
+              { name: "Ana Pérez", role: "Solo lectura", status: "offline" as const },
+            ].map((member) => (
+              <li>
+                <Avatar name={member.name} size="sm" status={member.status} />
+                <span class="member-list__name">{member.name}</span>
+                <span class="member-list__role">{member.role}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </Card>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Reglas</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="guideline guideline--do">
+        <p class="guideline__label">Hazlo</p>
+        <ul>
+          <li>Una idea por tarjeta, con un título claro.</li>
+          <li>Padding de 24 px por defecto; 16 px en listas densas.</li>
+          <li>Igualar alturas dentro de una misma fila de grid.</li>
+        </ul>
+      </div>
+      <div class="guideline guideline--dont">
+        <p class="guideline__label">Evítalo</p>
+        <ul>
+          <li>Anidar tarjetas dentro de tarjetas.</li>
+          <li>Usar tarjetas como única forma de separar secciones.</li>
+          <li>Combinar interacción de tarjeta con acciones internas.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+  .block h2 {
+    font-size: var(--ds-text-2xl);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-sm);
+    margin-bottom: var(--ds-space-5);
+  }
+  .block__lead code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.85em;
+    padding: 0.1em 0.3em;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-color-surface-sunken);
+  }
+
+  .demo-card {
+    width: 100%;
+    max-width: 24rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-5);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .stat__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+  }
+  .stat__label {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+  .stat__value {
+    font-size: var(--ds-text-3xl);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .stat__spark {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 2.5rem;
+  }
+  .stat__spark span {
+    flex: 1;
+    border-radius: 2px;
+    background: var(--ds-color-primary);
+  }
+
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+  }
+  .card-link:hover {
+    text-decoration: none;
+  }
+  .card-link :global(.ds-card) {
+    width: 100%;
+  }
+  .card-link__cta {
+    display: inline-block;
+    margin-top: var(--ds-space-4);
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-primary);
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--ds-space-4);
+  }
+  .profile {
+    display: flex;
+    gap: var(--ds-space-4);
+    align-items: flex-start;
+  }
+  .profile__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .profile__name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+  .profile__name-row h3 {
+    font-size: var(--ds-text-lg);
+  }
+  .profile__role {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+  .profile__bio {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-normal);
+  }
+  .profile__actions {
+    display: flex;
+    gap: var(--ds-space-2);
+    margin-top: var(--ds-space-2);
+  }
+
+  .member-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .member-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    padding-block: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .member-list li:last-child {
+    border-bottom: 0;
+  }
+  .member-list__name {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text);
+    font-weight: var(--ds-weight-medium);
+  }
+  .member-list__role {
+    margin-left: auto;
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .guideline {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    font-size: var(--ds-text-sm);
+  }
+  .guideline__label {
+    display: inline-block;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--ds-radius-full);
+  }
+  .guideline--do .guideline__label {
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+  }
+  .guideline--dont .guideline__label {
+    color: var(--ds-color-danger);
+    background: var(--ds-color-danger-soft);
+  }
+  .guideline ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-left: var(--ds-space-5);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+
+  @media (max-width: 820px) {
+    .profile-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

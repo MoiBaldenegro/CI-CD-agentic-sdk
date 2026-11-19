@@ -1,0 +1,444 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Button from "../components/Button.astro";
+import Badge from "../components/Badge.astro";
+
+const changelog = [
+  {
+    version: "1.0.0",
+    date: "Nov 2026",
+    current: true,
+    items: [
+      "Primera versión estable de tokens y componentes.",
+      "Tema oscuro completo con pares accesibles.",
+      "Botones, formularios, tarjetas y feedback documentados.",
+    ],
+  },
+  {
+    version: "0.9.0",
+    date: "Oct 2026",
+    items: [
+      "Nueva paleta de violeta con 11 pasos.",
+      "Se unifican radios y sombras en una sola escala.",
+      "Se elimina el componente de tabla legacy.",
+    ],
+  },
+  {
+    version: "0.8.0",
+    date: "Sep 2026",
+    items: [
+      "Migración de la tipografía a Inter Variable.",
+      "Primeros tokens semánticos de color.",
+    ],
+  },
+];
+
+const naming = [
+  { layer: "Primitivo", example: "--ds-violet-600", use: "Valor crudo. No se usa en componentes." },
+  { layer: "Semántico", example: "--ds-color-primary", use: "Intención. Es la capa que consumen los componentes." },
+  { layer: "Componente", example: "--ds-btn-bg", use: "Local al componente. Solo si el semántico no alcanza." },
+];
+
+const snippetImport = `/* src/styles/global.css */
+@import "aurora-ds/tokens.css";`;
+
+const snippetUse = `.panel {
+  background: var(--ds-color-surface);
+  padding: var(--ds-space-6);
+  border-radius: var(--ds-radius-lg);
+}`;
+
+const snippetTheme = `<html data-theme="light">
+<!-- cambia a "dark" -->
+<html data-theme="dark">`;
+---
+
+<Base title="Tokens y descargas" showToc>
+  <PageHeader
+    eyebrow="Recursos"
+    title="Tokens y descargas"
+    lead="El sistema vive en CSS y se exporta también como JSON para herramientas de diseño. Los tokens semánticos son el contrato entre diseño y código."
+    meta={["CSS", "JSON", "2 temas", "v1.0.0"]}
+  />
+
+  <section class="block">
+    <h2>Instalación</h2>
+    <div class="install-grid">
+      <div class="install-card">
+        <div class="install-card__head">
+          <span class="install-card__label">1 · Importa los estilos</span>
+        </div>
+        <pre><code>{snippetImport}</code></pre>
+      </div>
+      <div class="install-card">
+        <div class="install-card__head">
+          <span class="install-card__label">2 · Usa los tokens</span>
+        </div>
+        <pre><code>{snippetUse}</code></pre>
+      </div>
+      <div class="install-card">
+        <div class="install-card__head">
+          <span class="install-card__label">3 · Activa el tema</span>
+        </div>
+        <pre><code>{snippetTheme}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Descargas</h2>
+    <div class="downloads">
+      <div class="download">
+        <span class="download__icon" aria-hidden="true">{"{ }"}</span>
+        <div class="download__info">
+          <strong>tokens.json</strong>
+          <p>Tokens primitivos y semánticos para Figma, Style Dictionary o scripts.</p>
+        </div>
+        <Button href="/tokens.json" variant="secondary" size="sm" download>Descargar</Button>
+      </div>
+      <div class="download">
+        <span class="download__icon" aria-hidden="true">CSS</span>
+        <div class="download__info">
+          <strong>tokens.css</strong>
+          <p>Variables CSS listas para importar, con tema claro y oscuro.</p>
+        </div>
+        <Button href="/fundamentos/colores" variant="secondary" size="sm">Ver referencia</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Nomenclatura</h2>
+    <p class="ds-muted block__lead">
+      Tres capas con una regla simple: cuanto más se reutiliza un token, más abstracto debe ser su
+      nombre.
+    </p>
+    <div class="table-wrap">
+      <table class="name-table">
+        <thead>
+          <tr><th>Capa</th><th>Ejemplo</th><th>Uso</th></tr>
+        </thead>
+        <tbody>
+          {
+            naming.map((row) => (
+              <tr>
+                <td><strong>{row.layer}</strong></td>
+                <td><code>{row.example}</code></td>
+                <td class="ds-muted">{row.use}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="prefix-note">
+      <p>
+        <strong>Prefijo <code>--ds-</code></strong>: evita colisiones con variables del producto y
+        deja claro el origen del valor. Nunca uses el nombre del color en el semántico
+        (<code>--ds-color-violet</code>) sino su función (<code>--ds-color-primary</code>).
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Versionado</h2>
+    <div class="versioning">
+      <div class="versioning__item">
+        <Badge variant="primary" size="sm">Major</Badge>
+        <p>Cambios incompatibles: renombrar o eliminar tokens y props públicos.</p>
+      </div>
+      <div class="versioning__item">
+        <Badge variant="info" size="sm">Minor</Badge>
+        <p>Nuevos componentes o tokens. Sin romper lo existente.</p>
+      </div>
+      <div class="versioning__item">
+        <Badge variant="neutral" size="sm">Patch</Badge>
+        <p>Correcciones de contraste, documentación o estilos internos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Changelog</h2>
+    <div class="changelog">
+      {
+        changelog.map((entry) => (
+          <div class="changelog__entry">
+            <div class="changelog__meta">
+              <span class="changelog__version">v{entry.version}</span>
+              <span class="changelog__date">{entry.date}</span>
+              {entry.current && <Badge variant="success" size="sm">Actual</Badge>}
+            </div>
+            <ul>
+              {entry.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Contribuir</h2>
+    <div class="contrib">
+      <ol>
+        <li><span>01</span><div><strong>Justifica el patrón</strong><p>Si aparece tres veces en el producto, es candidato a componente del sistema.</p></div></li>
+        <li><span>02</span><div><strong>Usa tokens existentes</strong><p>Un componente nuevo no introduce valores nuevos; reutiliza la escala.</p></div></li>
+        <li><span>03</span><div><strong>Documenta estados</strong><p>Reposo, hover, foco, deshabilitado y error. Sin estados no hay componente.</p></div></li>
+        <li><span>04</span><div><strong>Valida accesibilidad</strong><p>Contraste AA, foco visible y nombre accesible en controles sin texto.</p></div></li>
+      </ol>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+  .block h2 {
+    font-size: var(--ds-text-2xl);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-sm);
+    margin-bottom: var(--ds-space-5);
+  }
+
+  .install-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: var(--ds-space-4);
+  }
+  .install-card {
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface-sunken);
+    overflow: hidden;
+  }
+  .install-card__head {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .install-card__label {
+    font-size: var(--ds-text-xs);
+    font-weight: var(--ds-weight-medium);
+    color: var(--ds-color-text-secondary);
+  }
+  .install-card pre {
+    margin: 0;
+    padding: var(--ds-space-4);
+    overflow-x: auto;
+    font-size: var(--ds-text-xs);
+    line-height: 1.7;
+    color: var(--ds-color-text-secondary);
+  }
+
+  .downloads {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+  }
+  .download {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-xs);
+  }
+  .download__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-primary-soft);
+    color: var(--ds-color-primary);
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    flex-shrink: 0;
+  }
+  .download__info {
+    flex: 1;
+    min-width: 0;
+  }
+  .download__info strong {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .download__info p {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+    line-height: var(--ds-leading-snug);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .name-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ds-text-sm);
+    min-width: 560px;
+  }
+  .name-table th {
+    text-align: left;
+    padding: var(--ds-space-3) var(--ds-space-4);
+    font-size: var(--ds-text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ds-tracking-wide);
+    color: var(--ds-color-text-muted);
+    background: var(--ds-color-surface-muted);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .name-table td {
+    padding: var(--ds-space-3) var(--ds-space-4);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .name-table tr:last-child td {
+    border-bottom: 0;
+  }
+  .name-table code {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-primary);
+  }
+
+  .prefix-note {
+    margin-top: var(--ds-space-4);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-left: 3px solid var(--ds-color-primary);
+    border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+    background: var(--ds-color-primary-soft);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+  }
+  .prefix-note code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.85em;
+    color: var(--ds-color-primary);
+  }
+
+  .versioning {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--ds-space-3);
+  }
+  .versioning__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    align-items: flex-start;
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-surface);
+  }
+  .versioning__item p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+
+  .changelog {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-4);
+  }
+  .changelog__entry {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: var(--ds-space-4);
+    padding: var(--ds-space-4) 0;
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .changelog__entry:last-child {
+    border-bottom: 0;
+  }
+  .changelog__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ds-space-1);
+  }
+  .changelog__version {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+    color: var(--ds-color-text);
+  }
+  .changelog__date {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+  .changelog__entry ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-left: var(--ds-space-5);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+
+  .contrib ol {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--ds-space-4);
+  }
+  .contrib li {
+    display: flex;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .contrib li > span {
+    font-family: var(--ds-font-mono);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-primary);
+    padding-top: 0.1rem;
+  }
+  .contrib strong {
+    display: block;
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+    margin-bottom: var(--ds-space-1);
+  }
+  .contrib p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+
+  @media (max-width: 640px) {
+    .changelog__entry {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--ds-space-2);
+    }
+    .download {
+      flex-wrap: wrap;
+    }
+    .download__info {
+      flex-basis: calc(100% - 3.5rem);
+    }
+  }
+</style>

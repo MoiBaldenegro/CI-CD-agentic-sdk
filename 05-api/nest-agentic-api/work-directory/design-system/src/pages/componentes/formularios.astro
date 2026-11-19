@@ -1,0 +1,409 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Input from "../../components/Input.astro";
+import Textarea from "../../components/Textarea.astro";
+import Checkbox from "../../components/Checkbox.astro";
+import Button from "../../components/Button.astro";
+import Demo from "../../components/Demo.astro";
+
+const inputCode = `<Input
+  label="Correo corporativo"
+  name="email"
+  type="email"
+  placeholder="tu@aurora.app"
+  hint="Usaremos este correo para el acceso."
+/>`;
+
+const errorCode = `<Input
+  label="Correo corporativo"
+  name="email"
+  type="email"
+  value="lucia@"
+  error="Introduce un correo válido."
+/>`;
+
+const selectCode = `<label class="field">
+  <span>Rol en el equipo</span>
+  <select>
+    <option>Analista</option>
+    <option>Administrador</option>
+    <option>Solo lectura</option>
+  </select>
+</label>`;
+---
+
+<Base title="Formularios" showToc>
+  <PageHeader
+    eyebrow="Componentes · Entrada"
+    title="Formularios"
+    lead="Campos legibles, etiquetas siempre visibles y errores junto al campo que los provoca. La validación nunca depende solo del color."
+    meta={["Input", "Textarea", "Checkbox", "Select nativo"]}
+  />
+
+  <section class="block">
+    <h2>Input de texto</h2>
+    <p class="ds-muted block__lead">
+      La etiqueta permanece visible; el placeholder es un ejemplo, nunca la etiqueta. El texto de
+      ayuda explica el formato esperado antes de que el usuario falle.
+    </p>
+    <Demo code={inputCode} label="Input" stack>
+      <div class="demo-field">
+        <Input
+          label="Correo corporativo"
+          name="email"
+          type="email"
+          placeholder="tu@aurora.app"
+          hint="Usaremos este correo para el acceso."
+        />
+      </div>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Estados de validación</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="state-card">
+        <span class="state-card__tag">Reposo</span>
+        <Input label="Nombre del informe" name="report-name" placeholder="Ingresos Q4" />
+      </div>
+      <div class="state-card">
+        <span class="state-card__tag">Con ayuda</span>
+        <Input label="Slug" name="slug" value="ingresos-q4" hint="Solo minúsculas, números y guiones." />
+      </div>
+      <div class="state-card">
+        <span class="state-card__tag state-card__tag--error">Error</span>
+        <Input label="Correo" name="email-error" type="email" value="lucia@" error="Introduce un correo válido." />
+      </div>
+      <div class="state-card">
+        <span class="state-card__tag">Deshabilitado</span>
+        <Input label="ID del espacio" name="workspace" value="aurora-prod" disabled hint="Solo un administrador puede cambiarlo." />
+      </div>
+      <div class="state-card">
+        <span class="state-card__tag">Obligatorio</span>
+        <Input label="Nombre del equipo" name="team" placeholder="Equipo de datos" required hint="Aparecerá en las menciones." />
+      </div>
+      <div class="state-card">
+        <span class="state-card__tag">Contraseña</span>
+        <Input label="Contraseña" name="password" type="password" placeholder="Mínimo 12 caracteres" hint="Incluye una mayúscula y un número." />
+      </div>
+    </div>
+    <Demo code={errorCode} label="Error" stack>
+      <div class="demo-field">
+        <Input label="Correo corporativo" name="email-demo" type="email" value="lucia@" error="Introduce un correo válido." />
+      </div>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Textarea</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="state-card">
+        <Textarea
+          label="Descripción del informe"
+          name="description"
+          placeholder="Explica qué incluye este informe y quién debería verlo…"
+          hint="Máximo 280 caracteres."
+        />
+      </div>
+      <div class="state-card">
+        <Textarea
+          label="Notas para el equipo (obligatorio)"
+          name="notes"
+          rows={4}
+          required
+          error="Este campo es necesario para publicar."
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Selección</h2>
+    <p class="ds-muted block__lead">
+      Usa <code>select</code> nativo con el estilo del sistema. Para menos de cuatro opciones es
+      preferible un grupo de radios o segmentos; para muchas, un buscador.
+    </p>
+    <Demo code={selectCode} label="Select" stack>
+      <div class="demo-field">
+        <label class="field" for="role-select">
+          <span class="field__label">Rol en el equipo</span>
+          <select class="field__select" id="role-select" name="role">
+            <option>Analista</option>
+            <option>Administrador</option>
+            <option>Solo lectura</option>
+          </select>
+        </label>
+      </div>
+    </Demo>
+  </section>
+
+  <section class="block">
+    <h2>Checkbox</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="state-card">
+        <Checkbox name="digest" label="Enviar resumen semanal" description="Un correo cada lunes con tus métricas clave." checked />
+      </div>
+      <div class="state-card">
+        <Checkbox name="terms" label="Acepto el tratamiento de datos" description="Puedes cambiar esta preferencia más adelante." required />
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Formulario completo</h2>
+    <p class="ds-muted block__lead">
+      Patrón de invitación: un grupo de campos relacionados, acción primaria al final y una salida
+      secundaria. Los errores aparecen al enviar, no al escribir.
+    </p>
+    <div class="form-card">
+      <div class="form-card__head">
+        <h3>Invitar a un compañero</h3>
+        <p>Recibirá un acceso al espacio de trabajo Aurora.</p>
+      </div>
+      <form class="form-card__form" id="inviteForm">
+        <div class="form-card__row">
+          <Input label="Nombre completo" name="invite-name" placeholder="Lucía Ortega" required />
+          <Input label="Correo" name="invite-email" type="email" placeholder="lucia@empresa.com" required />
+        </div>
+        <label class="field" for="invite-role">
+          <span class="field__label">Rol</span>
+          <select class="field__select" id="invite-role" name="invite-role">
+            <option>Analista</option>
+            <option>Administrador</option>
+            <option>Solo lectura</option>
+          </select>
+          <span class="field__hint">El rol define qué paneles puede editar.</span>
+        </label>
+        <Checkbox name="invite-notify" label="Notificar por correo" description="Enviaremos la invitación inmediatamente." checked />
+        <div class="form-card__actions">
+          <Button type="submit">Enviar invitación</Button>
+          <Button variant="ghost" type="reset">Cancelar</Button>
+        </div>
+        <p class="form-card__success" id="formSuccess" hidden>
+          Invitación enviada. En breve llegará el acceso a su correo.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Reglas</h2>
+    <div class="ds-grid ds-grid--2">
+      <div class="guideline guideline--do">
+        <p class="guideline__label">Hazlo</p>
+        <ul>
+          <li>Etiqueta arriba, siempre visible y asociada con <code>for</code>.</li>
+          <li>Agrupa campos con la misma unidad de significado.</li>
+          <li>Describe el error con una acción concreta.</li>
+        </ul>
+      </div>
+      <div class="guideline guideline--dont">
+        <p class="guideline__label">Evítalo</p>
+        <ul>
+          <li>Usar el placeholder como etiqueta.</li>
+          <li>Indicar errores solo con borde rojo.</li>
+          <li>Validar con mensajes genéricos como «Campo inválido».</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.getElementById("inviteForm") as HTMLFormElement | null;
+  const success = document.getElementById("formSuccess");
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    if (success) success.hidden = false;
+    form.querySelectorAll("input:not([type=checkbox])").forEach((input) => {
+      (input as HTMLInputElement).value = "";
+    });
+  });
+
+  form?.addEventListener("reset", () => {
+    if (success) success.hidden = true;
+  });
+</script>
+
+<style>
+  .block {
+    padding-block: var(--ds-space-8);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+  .block:last-child {
+    border-bottom: 0;
+  }
+  .block h2 {
+    font-size: var(--ds-text-2xl);
+    margin-bottom: var(--ds-space-2);
+  }
+  .block__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-sm);
+    margin-bottom: var(--ds-space-5);
+  }
+  .block__lead code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.85em;
+    padding: 0.1em 0.3em;
+    border-radius: var(--ds-radius-xs);
+    background: var(--ds-color-surface-sunken);
+  }
+
+  .demo-field {
+    width: 100%;
+    max-width: 24rem;
+  }
+
+  .state-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface);
+  }
+  .state-card__tag {
+    align-self: flex-start;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-color-text-muted);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-surface-sunken);
+  }
+  .state-card__tag--error {
+    color: var(--ds-color-danger);
+    background: var(--ds-color-danger-soft);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+  }
+  .field__label {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-medium);
+  }
+  .field__select {
+    appearance: none;
+    width: 100%;
+    padding: 0.6rem 2.2rem 0.6rem 0.8rem;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text);
+    background-color: var(--ds-color-surface);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7c93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    border: 1px solid var(--ds-color-border-strong);
+    border-radius: var(--ds-radius-md);
+    box-shadow: var(--ds-shadow-xs);
+    cursor: pointer;
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
+      box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .field__select:hover {
+    border-color: var(--ds-color-text-muted);
+  }
+  .field__select:focus {
+    outline: none;
+    border-color: var(--ds-color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-color-primary) 22%, transparent);
+  }
+  .field__hint {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .form-card {
+    max-width: 38rem;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-xl);
+    background: var(--ds-color-surface);
+    box-shadow: var(--ds-shadow-md);
+    overflow: hidden;
+  }
+  .form-card__head {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface-muted);
+  }
+  .form-card__head h3 {
+    font-size: var(--ds-text-lg);
+  }
+  .form-card__head p {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-muted);
+    margin-top: 2px;
+  }
+  .form-card__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-6);
+  }
+  .form-card__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--ds-space-4);
+  }
+  .form-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-3);
+    padding-top: var(--ds-space-2);
+  }
+  .form-card__success {
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+    border: 1px solid color-mix(in srgb, var(--ds-color-success) 30%, transparent);
+    border-radius: var(--ds-radius-md);
+    padding: var(--ds-space-3) var(--ds-space-4);
+  }
+
+  .guideline {
+    padding: var(--ds-space-5) var(--ds-space-6);
+    border-radius: var(--ds-radius-lg);
+    border: 1px solid var(--ds-color-border);
+    background: var(--ds-color-surface);
+    font-size: var(--ds-text-sm);
+  }
+  .guideline__label {
+    display: inline-block;
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--ds-space-3);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--ds-radius-full);
+  }
+  .guideline--do .guideline__label {
+    color: var(--ds-color-success);
+    background: var(--ds-color-success-soft);
+  }
+  .guideline--dont .guideline__label {
+    color: var(--ds-color-danger);
+    background: var(--ds-color-danger-soft);
+  }
+  .guideline ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-2);
+    padding-left: var(--ds-space-5);
+    color: var(--ds-color-text-secondary);
+    line-height: var(--ds-leading-snug);
+  }
+  .guideline code {
+    font-family: var(--ds-font-mono);
+    font-size: 0.85em;
+  }
+</style>

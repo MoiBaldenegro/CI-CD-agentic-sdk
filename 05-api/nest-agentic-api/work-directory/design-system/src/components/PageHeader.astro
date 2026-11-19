@@ -1,0 +1,68 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  meta?: string[];
+}
+
+const { eyebrow, title, lead, meta = [] } = Astro.props;
+---
+
+<header class="page-header">
+  <p class="ds-eyebrow">{eyebrow}</p>
+  <h1 class="page-header__title">{title}</h1>
+  <p class="page-header__lead">{lead}</p>
+  {
+    meta.length > 0 && (
+      <ul class="page-header__meta">
+        {meta.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    )
+  }
+</header>
+
+<style>
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding-bottom: var(--ds-space-8);
+    margin-bottom: var(--ds-space-2);
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+
+  .page-header__title {
+    font-size: clamp(2rem, 3.4vw, 2.9rem);
+    font-weight: var(--ds-weight-bold);
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  .page-header__lead {
+    max-width: 44rem;
+    font-size: var(--ds-text-lg);
+    line-height: var(--ds-leading-normal);
+    color: var(--ds-color-text-secondary);
+  }
+
+  .page-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-2);
+    list-style: none;
+    padding: 0;
+    margin-top: var(--ds-space-2);
+  }
+
+  .page-header__meta li {
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-surface);
+  }
+</style>

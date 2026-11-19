@@ -1,0 +1,661 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/global.css";
+import NavGroup from "../components/NavGroup.astro";
+import Badge from "../components/Badge.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  showToc?: boolean;
+}
+
+const {
+  title,
+  description = "Aurora DS — el sistema de diseño de nuestra plataforma de analítica.",
+  showToc = false,
+} = Astro.props;
+
+const current = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+const groups = [
+  {
+    title: "Introducción",
+    items: [{ label: "Visión general", href: "/" }],
+  },
+  {
+    title: "Fundamentos",
+    items: [
+      { label: "Colores", href: "/fundamentos/colores" },
+      { label: "Tipografía", href: "/fundamentos/tipografia" },
+      { label: "Espaciado y layout", href: "/fundamentos/espaciado" },
+    ],
+  },
+  {
+    title: "Componentes",
+    items: [
+      { label: "Botones", href: "/componentes/botones", badge: "5" },
+      { label: "Formularios", href: "/componentes/formularios", badge: "3" },
+      { label: "Tarjetas", href: "/componentes/tarjetas", badge: "2" },
+      { label: "Feedback", href: "/componentes/feedback", badge: "2" },
+    ],
+  },
+  {
+    title: "Recursos",
+    items: [
+      { label: "Patrones de producto", href: "/patrones" },
+      { label: "Tokens y descargas", href: "/recursos" },
+    ],
+  },
+];
+---
+
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} · Aurora DS</title>
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem("aurora-theme");
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const theme = stored || (prefersDark ? "dark" : "light");
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="ds-skip" href="#contenido">Saltar al contenido</a>
+
+    <div class="ds-shell">
+      <aside class="ds-sidebar" id="sidebar" aria-label="Navegación principal">
+        <div class="ds-sidebar__head">
+          <a class="ds-brand" href="/">
+            <span class="ds-brand__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2 3 20h18L12 2Z"></path>
+                <path d="M12 10.5 8.2 18h7.6L12 10.5Z" fill="currentColor" stroke="none"></path>
+              </svg>
+            </span>
+            <span class="ds-brand__text">
+              <strong>Aurora DS</strong>
+              <small>Design system</small>
+            </span>
+          </a>
+          <button class="ds-icon-btn ds-sidebar__close" type="button" id="closeSidebar" aria-label="Cerrar navegación">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <div class="ds-sidebar__search">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+          </svg>
+          <input type="search" id="navSearch" placeholder="Buscar en el sistema…" aria-label="Buscar en la navegación" />
+        </div>
+
+        <nav class="ds-sidebar__nav" id="sidebarNav">
+          {
+            groups.map((group) => (
+              <div data-nav-group>
+                <NavGroup items={group.items} title={group.title} current={current} />
+              </div>
+            ))
+          }
+          <p class="ds-sidebar__empty" id="navEmpty" hidden>Sin resultados.</p>
+        </nav>
+
+        <div class="ds-sidebar__foot">
+          <div class="ds-sidebar__meta">
+            <Badge variant="primary" size="sm" dot>v1.0</Badge>
+            <span class="ds-muted">Actualizado nov 2026</span>
+          </div>
+          <div class="ds-sidebar__theme">
+            <span class="ds-muted">Tema</span>
+            <div class="ds-theme-switch" role="group" aria-label="Tema de color">
+              <button type="button" data-theme-set="light" aria-label="Tema claro">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+              </button>
+              <button type="button" data-theme-set="dark" aria-label="Tema oscuro">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="ds-main">
+        <header class="ds-topbar">
+          <button class="ds-icon-btn ds-topbar__burger" type="button" id="openSidebar" aria-label="Abrir navegación" aria-controls="sidebar" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+          <div class="ds-topbar__crumb">
+            <span class="ds-topbar__product">Plataforma Aurora</span>
+            <span class="ds-topbar__sep" aria-hidden="true">/</span>
+            <span>{title}</span>
+          </div>
+          <div class="ds-topbar__actions">
+            <a class="ds-btn ds-btn--ghost ds-btn--sm" href="/recursos">Tokens</a>
+            <a class="ds-btn ds-btn--secondary ds-btn--sm" href="/patrones">Guía de producto</a>
+          </div>
+        </header>
+
+        <main id="contenido" class:list={["ds-content", showToc && "ds-content--with-toc"]}>
+          <slot />
+        </main>
+
+        <footer class="ds-footer">
+          <div class="ds-footer__brand">
+            <span class="ds-brand__mark ds-brand__mark--sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2 3 20h18L12 2Z"></path>
+              </svg>
+            </span>
+            <span>Aurora Design System · uso interno</span>
+          </div>
+          <span class="ds-muted">Construido con Astro · Tokens en CSS</span>
+        </footer>
+      </div>
+
+      {
+        showToc && (
+          <aside class="ds-toc" aria-label="En esta página">
+            <p class="ds-toc__title">En esta página</p>
+            <ul class="ds-toc__list" id="toc"></ul>
+          </aside>
+        )
+      }
+    </div>
+
+    <div class="ds-overlay" id="overlay" hidden></div>
+
+    <script>
+      const root = document.documentElement;
+      const themeButtons = document.querySelectorAll<HTMLButtonElement>("[data-theme-set]");
+
+      const applyTheme = (theme: string) => {
+        root.dataset.theme = theme;
+        try {
+          localStorage.setItem("aurora-theme", theme);
+        } catch (e) {}
+        themeButtons.forEach((btn) => {
+          const isActive = btn.dataset.themeSet === theme;
+          btn.classList.toggle("is-active", isActive);
+          btn.setAttribute("aria-pressed", String(isActive));
+        });
+      };
+
+      themeButtons.forEach((btn) => {
+        btn.addEventListener("click", () => applyTheme(btn.dataset.themeSet || "light"));
+      });
+      applyTheme(root.dataset.theme || "light");
+
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      const openBtn = document.getElementById("openSidebar");
+      const closeBtn = document.getElementById("closeSidebar");
+
+      const setSidebar = (open: boolean) => {
+        sidebar?.classList.toggle("is-open", open);
+        if (overlay) overlay.hidden = !open;
+        openBtn?.setAttribute("aria-expanded", String(open));
+        document.body.style.overflow = open ? "hidden" : "";
+      };
+
+      openBtn?.addEventListener("click", () => setSidebar(true));
+      closeBtn?.addEventListener("click", () => setSidebar(false));
+      overlay?.addEventListener("click", () => setSidebar(false));
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") setSidebar(false);
+      });
+
+      const search = document.getElementById("navSearch") as HTMLInputElement | null;
+      const navGroups = document.querySelectorAll<HTMLElement>("[data-nav-group]");
+      const empty = document.getElementById("navEmpty");
+
+      search?.addEventListener("input", () => {
+        const query = search.value.trim().toLowerCase();
+        let visible = 0;
+        navGroups.forEach((group) => {
+          let groupVisible = 0;
+          group.querySelectorAll<HTMLAnchorElement>(".ds-nav-link").forEach((link) => {
+            const matches = !query || (link.textContent || "").toLowerCase().includes(query);
+            (link.closest("li") as HTMLElement).hidden = !matches;
+            if (matches) groupVisible++;
+          });
+          group.hidden = groupVisible === 0;
+          visible += groupVisible;
+        });
+        if (empty) empty.hidden = visible !== 0;
+      });
+
+      document.querySelectorAll<HTMLButtonElement>("[data-copy-code]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const code = button.parentElement?.querySelector("code")?.textContent || "";
+          try {
+            await navigator.clipboard.writeText(code);
+            button.classList.add("is-copied");
+            const label = button.querySelector("[data-copy-label]");
+            if (label) label.textContent = "Copiado";
+            setTimeout(() => {
+              button.classList.remove("is-copied");
+              if (label) label.textContent = "Copiar";
+            }, 1600);
+          } catch (e) {}
+        });
+      });
+
+      const toc = document.getElementById("toc");
+      if (toc) {
+        const headings = document.querySelectorAll<HTMLElement>("main h2");
+        headings.forEach((heading, index) => {
+          if (!heading.id) heading.id = `seccion-${index + 1}`;
+          const li = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = `#${heading.id}`;
+          link.textContent = heading.textContent || "";
+          li.appendChild(link);
+          toc.appendChild(li);
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .ds-shell {
+    display: grid;
+    grid-template-columns: var(--ds-sidebar-width) minmax(0, 1fr);
+    min-height: 100dvh;
+  }
+
+  .ds-skip {
+    position: fixed;
+    top: var(--ds-space-3);
+    left: var(--ds-space-3);
+    z-index: 100;
+    padding: var(--ds-space-2) var(--ds-space-4);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-primary);
+    color: var(--ds-color-primary-contrast);
+    transform: translateY(-150%);
+    transition: transform var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ds-skip:focus {
+    transform: translateY(0);
+    text-decoration: none;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .ds-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--ds-color-sidebar);
+    border-right: 1px solid var(--ds-color-border);
+    z-index: 40;
+  }
+
+  .ds-sidebar__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ds-space-5) var(--ds-space-4);
+  }
+
+  .ds-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-3);
+    color: var(--ds-color-text);
+    text-decoration: none;
+  }
+  .ds-brand:hover {
+    text-decoration: none;
+  }
+
+  .ds-brand__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-gradient-brand);
+    color: #ffffff;
+    box-shadow: var(--ds-shadow-glow);
+    flex-shrink: 0;
+  }
+  .ds-brand__mark--sm {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: var(--ds-radius-sm);
+    box-shadow: none;
+  }
+
+  .ds-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .ds-brand__text strong {
+    font-size: var(--ds-text-sm);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: -0.01em;
+  }
+  .ds-brand__text small {
+    font-size: var(--ds-text-2xs);
+    color: var(--ds-color-text-muted);
+  }
+
+  .ds-sidebar__search {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin: 0 var(--ds-space-4) var(--ds-space-2);
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-surface);
+    color: var(--ds-color-text-muted);
+    transition: border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ds-sidebar__search:focus-within {
+    border-color: var(--ds-color-primary);
+  }
+  .ds-sidebar__search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text);
+  }
+  .ds-sidebar__search input:focus {
+    outline: none;
+  }
+  .ds-sidebar__search input::placeholder {
+    color: var(--ds-color-text-muted);
+  }
+
+  .ds-sidebar__nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-4);
+  }
+
+  .ds-sidebar__empty {
+    padding: var(--ds-space-3);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-muted);
+  }
+
+  .ds-sidebar__foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4);
+    border-top: 1px solid var(--ds-color-border);
+    font-size: var(--ds-text-xs);
+  }
+
+  .ds-sidebar__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+  }
+
+  .ds-sidebar__theme {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-2);
+  }
+
+  .ds-theme-switch {
+    display: inline-flex;
+    padding: 2px;
+    gap: 2px;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-surface-sunken);
+  }
+  .ds-theme-switch button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.5rem;
+    border: 0;
+    border-radius: var(--ds-radius-sm);
+    background: transparent;
+    color: var(--ds-color-text-muted);
+    transition: background-color var(--ds-duration-fast) var(--ds-ease-standard),
+      color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ds-theme-switch button.is-active {
+    background: var(--ds-color-surface);
+    color: var(--ds-color-primary);
+    box-shadow: var(--ds-shadow-xs);
+  }
+
+  .ds-sidebar__close {
+    display: none;
+  }
+
+  .ds-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid transparent;
+    border-radius: var(--ds-radius-md);
+    background: transparent;
+    color: var(--ds-color-text-secondary);
+    transition: background-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ds-icon-btn:hover {
+    background: var(--ds-color-surface-sunken);
+    color: var(--ds-color-text);
+  }
+
+  /* ---------- Columna principal ---------- */
+  .ds-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100dvh;
+    background:
+      var(--ds-gradient-hero),
+      var(--ds-color-canvas);
+    background-repeat: no-repeat;
+    background-size: 100% 480px, 100% 100%;
+  }
+
+  .ds-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4);
+    height: var(--ds-topbar-height);
+    padding-inline: var(--ds-space-6);
+    border-bottom: 1px solid var(--ds-color-border);
+    background: color-mix(in srgb, var(--ds-color-canvas) 82%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .ds-topbar__burger {
+    display: none;
+  }
+
+  .ds-topbar__crumb {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    font-size: var(--ds-text-sm);
+    color: var(--ds-color-text-secondary);
+    min-width: 0;
+  }
+  .ds-topbar__crumb > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ds-topbar__product {
+    color: var(--ds-color-text-muted);
+  }
+  .ds-topbar__sep {
+    color: var(--ds-color-border-strong);
+  }
+
+  .ds-topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin-left: auto;
+  }
+
+  .ds-content {
+    flex: 1;
+    width: 100%;
+    max-width: var(--ds-content-max);
+    margin-inline: auto;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-16);
+  }
+
+  /* ---------- TOC ---------- */
+  .ds-toc {
+    position: sticky;
+    top: var(--ds-topbar-height);
+    align-self: start;
+    display: none;
+    width: 15rem;
+    padding: var(--ds-space-10) var(--ds-space-6) var(--ds-space-6) 0;
+  }
+  .ds-toc__title {
+    font-size: var(--ds-text-2xs);
+    font-weight: var(--ds-weight-semibold);
+    letter-spacing: var(--ds-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ds-color-text-muted);
+    margin-bottom: var(--ds-space-3);
+  }
+  .ds-toc__list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-1);
+    border-left: 1px solid var(--ds-color-border);
+  }
+  .ds-toc__list a {
+    display: block;
+    padding: 0.25rem 0 var(--ds-space-1) var(--ds-space-3);
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-muted);
+    text-decoration: none;
+    transition: color var(--ds-duration-fast) var(--ds-ease-standard),
+      border-color var(--ds-duration-fast) var(--ds-ease-standard);
+  }
+  .ds-toc__list a:hover {
+    color: var(--ds-color-text);
+    border-color: var(--ds-color-border-strong);
+  }
+
+  .ds-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+    max-width: var(--ds-content-max);
+    width: 100%;
+    margin-inline: auto;
+    padding: var(--ds-space-6) var(--ds-space-6) var(--ds-space-8);
+    border-top: 1px solid var(--ds-color-border);
+    font-size: var(--ds-text-xs);
+    color: var(--ds-color-text-secondary);
+  }
+  .ds-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+  }
+
+  .ds-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: color-mix(in srgb, #0c0c14 55%, transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (min-width: 1280px) {
+    .ds-content--with-toc {
+      max-width: none;
+    }
+    .ds-content--with-toc ~ .ds-toc,
+    .ds-shell:has(.ds-content--with-toc) {
+      grid-template-columns: var(--ds-sidebar-width) minmax(0, 1fr) 15rem;
+    }
+    .ds-toc {
+      display: block;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .ds-shell {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .ds-sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: min(var(--ds-sidebar-width), 86vw);
+      transform: translateX(-102%);
+      transition: transform var(--ds-duration-slow) var(--ds-ease-out);
+      box-shadow: var(--ds-shadow-lg);
+    }
+    .ds-sidebar.is-open {
+      transform: translateX(0);
+    }
+    .ds-sidebar__close,
+    .ds-topbar__burger {
+      display: inline-flex;
+    }
+    .ds-topbar {
+      padding-inline: var(--ds-space-4);
+    }
+    .ds-topbar__actions {
+      display: none;
+    }
+    .ds-content {
+      padding: var(--ds-space-8) var(--ds-space-4) var(--ds-space-12);
+    }
+    .ds-footer {
+      padding-inline: var(--ds-space-4);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ds-topbar__product,
+    .ds-topbar__sep {
+      display: none;
+    }
+  }
+</style>

@@ -11,6 +11,7 @@ import { resolveQueueConfig } from './global/queue.config';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const port = Number(process.env.PORT ?? 3003);
+  const host = process.env.HOST?.trim() || '127.0.0.1';
   const agentAdapter = resolveAgentAdapter();
   const queue = resolveQueueConfig();
 
@@ -35,8 +36,14 @@ async function bootstrap() {
     );
   }
 
-  await app.listen(port);
-  logger.log(`API escuchando en http://localhost:${port}`);
+  if (host !== '127.0.0.1' && host !== 'localhost' && !process.env.API_KEY) {
+    logger.warn(
+      `HOST=${host} expone la API en la red sin API_KEY: cualquiera podría ejecutar prompts en el agente`,
+    );
+  }
+
+  await app.listen(port, host);
+  logger.log(`API escuchando en http://${host}:${port}`);
 }
 
 void bootstrap();

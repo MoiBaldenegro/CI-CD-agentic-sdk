@@ -136,7 +136,16 @@ Exporta `TaskApplicationService` y `AgentApplicationService`.
 - Modo `postgres`: `TypeOrmTaskRepository`.
 - OpenCode CLI usa `OPENCODE_WORKSPACE`, `OPENCODE_MODEL`,
   `OPENCODE_SYSTEM_PROMPT`, `OPENCODE_DEBUG` y `OPENCODE_THINKING`.
-- `OPENCODE_WORKSPACE` vacío cae a `process.cwd()`.
+- `OPENCODE_WORKSPACE` vacío cae a `./work-directory`; rutas relativas se
+  resuelven dentro de él y cualquier ruta fuera se rechaza al arrancar.
+- OpenCode corre con `permission.external_directory: "deny"` (no puede tocar
+  archivos fuera del workspace; los paths dentro de comandos bash son solo
+  advertencia en OpenCode, no bloqueo).
+- `OPENCODE_TIMEOUT_MS` (default 30 min) mata el árbol de procesos de OpenCode.
+- Sin marcador `[[FACTORY_STATUS:...]]` la tarea queda en `IN_REVIEW`, no `COMPLETED`.
+- `HOST` default `127.0.0.1`. `API_KEY` opcional: si se define, todo endpoint
+  salvo `health`/`dashboard` exige `x-api-key`; el dashboard la toma de
+  `?key=` y la guarda en localStorage.
 - `OpenCodeAgentAdapter.ts` (SDK `@opencode/sdk`) queda excluido de
   `tsconfig`, `tsconfig.build` y ESLint; se usa `OpenCodeCliAgentAdapter`.
 - Puertos y casos de uso de tareas pasaron a `Promise` por TypeORM.

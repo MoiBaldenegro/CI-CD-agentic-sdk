@@ -33,9 +33,11 @@ export function parseTaskAgentOutcome(text: string): TaskAgentOutcome {
 function normalizeStatus(value: string | undefined): TaskAgentOutcomeStatus {
   const normalized = value?.trim().toUpperCase();
 
-  if (normalized === 'IN_REVIEW' || normalized === 'BLOCKED') {
+  if (normalized === 'COMPLETED' || normalized === 'BLOCKED') {
     return normalized;
   }
 
-  return 'COMPLETED';
+  // Sin marcador (respuesta cortada, agente que olvidó el protocolo, etc.)
+  // nunca se da por terminada: un humano debe revisarla.
+  return 'IN_REVIEW';
 }

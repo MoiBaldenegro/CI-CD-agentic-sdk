@@ -2,6 +2,8 @@ import type { AgentPrimitives } from '../Agent.entity.js';
 
 export interface AgentPrompt {
   readonly text: string;
+  /** Carpeta donde debe trabajar el agente (p. ej. el repo clonado). */
+  readonly workingDirectory?: string;
 }
 
 export interface AgentResponse {

@@ -37,6 +37,7 @@ import {
   CreateTaskRequest,
   SendPromptRequest,
 } from './factory.dto';
+import { Public } from '../../../../shared/guards/api-key.guard';
 import { renderTaskDashboard } from './task-dashboard.page';
 
 @Controller('factory')
@@ -48,6 +49,7 @@ export class FactoryController {
     private readonly taskApplicationService: TaskApplicationService,
   ) {}
 
+  @Public()
   @Get('health')
   health() {
     const queue = resolveQueueConfig();
@@ -66,6 +68,7 @@ export class FactoryController {
     };
   }
 
+  @Public()
   @Get('dashboard')
   @Header('Content-Type', 'text/html; charset=utf-8')
   @Header('Cache-Control', 'no-store')

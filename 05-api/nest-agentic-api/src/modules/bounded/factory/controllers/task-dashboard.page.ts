@@ -548,6 +548,28 @@ export function renderTaskDashboard(): string {
     (function () {
       'use strict';
 
+      // API key: se toma de ?key=... (y se recuerda) o de localStorage.
+      var apiKey = (function () {
+        var fromUrl = new URLSearchParams(location.search).get('key');
+        try {
+          if (fromUrl) {
+            localStorage.setItem('factory-api-key', fromUrl);
+            history.replaceState(null, '', location.pathname);
+            return fromUrl;
+          }
+          return localStorage.getItem('factory-api-key') || '';
+        } catch (e) {
+          return fromUrl || '';
+        }
+      })();
+
+      function withAuth(headers) {
+        if (apiKey) {
+          headers['x-api-key'] = apiKey;
+        }
+        return headers;
+      }
+
       var STAGES = [
         { key: 'PENDING', label: 'Pendientes', hint: 'Esperando asignación' },
         { key: 'QUEUED', label: 'En cola', hint: 'Listas para ejecutarse' },
@@ -802,7 +824,7 @@ export function renderTaskDashboard(): string {
       async function refreshQueue() {
         try {
           var response = await fetch('/factory/queue/stats', {
-            headers: { Accept: 'application/json' },
+            headers: withAuth({ Accept: 'application/json' }),
             cache: 'no-store'
           });
 
@@ -821,10 +843,10 @@ export function renderTaskDashboard(): string {
           '/factory/tasks/' + encodeURIComponent(taskId) + '/' + action,
           {
             method: 'POST',
-            headers: {
+            headers: withAuth({
               Accept: 'application/json',
               'Content-Type': 'application/json'
-            },
+            }),
             body: payload ? JSON.stringify(payload) : undefined
           }
         );
@@ -946,7 +968,7 @@ export function renderTaskDashboard(): string {
       async function refresh() {
         try {
           var response = await fetch('/factory/tasks', {
-            headers: { Accept: 'application/json' },
+            headers: withAuth({ Accept: 'application/json' }),
             cache: 'no-store'
           });
 

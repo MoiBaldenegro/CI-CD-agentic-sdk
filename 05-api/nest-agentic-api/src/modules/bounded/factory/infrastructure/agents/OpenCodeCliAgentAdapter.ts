@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { delimiter, join } from 'node:path';
 import { homedir, tmpdir } from 'node:os';
 import {
@@ -11,11 +11,13 @@ import {
   type AgentPrompt,
   type AgentResponse,
 } from 'lib/factory';
+import { resolveWorkspace } from '../../../../../global/agent.config';
 
 export interface OpenCodeCliAgentAdapterOptions {
   readonly directory: string;
   readonly model?: string;
   readonly systemPrompt?: string;
+  readonly timeoutMs: number;
 }
 
 export class OpenCodeCliAgentAdapter implements AgentGateway {
@@ -31,6 +33,11 @@ export class OpenCodeCliAgentAdapter implements AgentGateway {
       throw new Error(`Unsupported agent provider: ${agent.provider}`);
     }
 
+    // La carpeta pedida se valida: debe estar dentro de ./work-directory.
+    const directory =
+      prompt.workingDirectory !== undefined
+        ? resolveWorkspace(prompt.workingDirectory)
+        : this.options.directory;
     const executable = resolveOpenCodeExecutable();
     const args = ['run'];
     const model = agent.model ?? this.options.model;
@@ -50,19 +57,21 @@ export class OpenCodeCliAgentAdapter implements AgentGateway {
     args.push(prompt.text);
 
     this.logger.log(
-      `Enviando prompt a OpenCode CLI (agent=${agent.provider}:${agent.agentId}, model=${model ?? 'default'}, cwd=${this.options.directory}, chars=${prompt.text.length})`,
+      `Enviando prompt a OpenCode CLI (agent=${agent.provider}:${agent.agentId}, model=${model ?? 'default'}, cwd=${directory}, chars=${prompt.text.length})`,
     );
     this.logger.log(`Ejecutando: ${executable} ${args.join(' ')}`);
 
     try {
+      await mkdir(directory, { recursive: true });
+
       const result = await runOpenCode(
         executable,
         args,
-        this.options.directory,
+        directory,
         withStatusProtocol(
-          this.options.systemPrompt ??
-            createWorkspaceSystemPrompt(this.options.directory),
+          this.options.systemPrompt ?? createWorkspaceSystemPrompt(directory),
         ),
+        this.options.timeoutMs,
       );
       const text = extractCliResponse(result.stdout);
 
@@ -100,6 +109,7 @@ function runOpenCode(
   args: string[],
   directory: string,
   systemPrompt: string,
+  timeoutMs: number,
 ): Promise<{ readonly stdout: string; readonly stderr: string }> {
   return runWithTemporaryInstructions();
 
@@ -118,6 +128,9 @@ function runOpenCode(
         ...process.env,
         OPENCODE_CONFIG_CONTENT: JSON.stringify({
           instructions: [instructionsPath],
+          // Bloquea lecturas/escrituras fuera del cwd (el workspace).
+          // En `opencode run` no hay humano para aprobar, así que "deny".
+          permission: { external_directory: 'deny' },
         }),
       });
     } finally {
@@ -143,6 +156,11 @@ function runOpenCode(
       );
       let stdout = '';
       let stderr = '';
+      let timedOut = false;
+      const timer = setTimeout(() => {
+        timedOut = true;
+        killProcessTree(child.pid);
+      }, timeoutMs);
 
       child.stdout.on('data', (chunk: Buffer) => {
         stdout += chunk.toString();
@@ -156,8 +174,22 @@ function runOpenCode(
           process.stderr.write(chunk);
         }
       });
-      child.on('error', reject);
+      child.on('error', (error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
       child.on('close', (code) => {
+        clearTimeout(timer);
+
+        if (timedOut) {
+          reject(
+            new Error(
+              `OpenCode CLI excedió el timeout de ${timeoutMs} ms y fue terminado`,
+            ),
+          );
+          return;
+        }
+
         if (code === 0) {
           resolve({ stdout, stderr });
           return;
@@ -175,6 +207,27 @@ function runOpenCode(
   }
 }
 
+function killProcessTree(pid: number | undefined): void {
+  if (pid === undefined) {
+    return;
+  }
+
+  if (process.platform === 'win32') {
+    // Con shell: true el hijo es cmd.exe; hay que matar todo el árbol.
+    spawn('taskkill', ['/pid', String(pid), '/T', '/F'], {
+      windowsHide: true,
+      stdio: 'ignore',
+    }).on('error', () => undefined);
+    return;
+  }
+
+  try {
+    process.kill(pid, 'SIGKILL');
+  } catch {
+    // El proceso ya terminó.
+  }
+}
+
 function createWorkspaceSystemPrompt(directory: string): string {
   return [
     'Trabaja exclusivamente dentro del workspace autorizado.',
@@ -182,6 +235,7 @@ function createWorkspaceSystemPrompt(directory: string): string {
     'Interpreta rutas como /projects o projects como un directorio projects dentro del workspace.',
     'No uses rutas de la raíz del sistema ni accedas a C:\\, /, /c o directorios externos.',
     'Si una instrucción solicita una ruta externa, pide confirmación antes de usarla.',
+    'No ejecutes git ni gh: la fábrica se encarga de commits, push y repositorios.',
   ].join('\n');
 }
 
